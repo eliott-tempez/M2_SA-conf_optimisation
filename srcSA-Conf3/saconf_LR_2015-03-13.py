@@ -132,7 +132,7 @@ COMPO_DATASET = "dataset_composition.csv"
 
 def install_dependencies():
     """ Install missing packages """
-    print 'Install missing packages: python-dev python-biopython clustalw'
+    print('Install missing packages: python-dev python-biopython clustalw')
     os.system('sudo apt-get install python-dev')
     os.system('sudo apt-get install clustalw')
     os.system('sudo easy_install -f http://biopython.org/DIST/ biopython')
@@ -152,41 +152,41 @@ def check_args(args):
     if args.alignFile and not os.path.isfile(args.alignFile):
         error += str("[ERROR] IDfile %s\n --File doesn't exist\n" % args.IDfile)
     if error:
-        print "#", "-"*78
-        print "#", "-"*78
-        print "#", " "*34, "ERROR"
-        print "#", "-"*78
+        print("#", "-"*78)
+        print("#", "-"*78)
+        print("#", " "*34, "ERROR")
+        print("#", "-"*78)
         sys.exit(error)
 
 
 
 def header(args):
     """ Print user info """
-    print ""
-    print "#", "-"*78
-    print "#", "-"*78
-    print "#", " "*35, "SA-conf"
-    print "#     ",
-    print "a tool to analyse to compare fastly protein sequences and structures"
-    print "#", "-"*78
-    print "#"
-#    print "#", os.getlogin(), "on", platform.platform()
-    print "#"
-    print "#", time.strftime("%d/%m/%Y")
-    print "#", time.strftime("%H:%M:%S")
-    print "#"
-    print "# Arguments"
-    print "# ---------"
-    print "#", "IDfile:", args.IDfile
-    print "#", "method:", args.method
-    print "#", "pdbpath:", args.pdbpath
-    print "#", "alignFile:", args.alignFile
-    print "#", "output:", args.output
-    print "#", "uniprot:", args.uniprot
-    print "#"
-    print "#", "-"*78
-    print "#", "-"*78
-    print ""
+    print("")
+    print("#", "-"*78)
+    print("#", "-"*78)
+    print("#", " "*35, "SA-conf")
+    print("#     ")
+    print("a tool to analyse to compare fastly protein sequences and structures")
+    print("#", "-"*78)
+    print("#")
+#    print("#", os.getlogin(), "on", platform.platform())
+    print("#")
+    print("#", time.strftime("%d/%m/%Y"))
+    print("#", time.strftime("%H:%M:%S"))
+    print("#")
+    print("# Arguments")
+    print("# ---------")
+    print("#", "IDfile:", args.IDfile)
+    print("#", "method:", args.method)
+    print("#", "pdbpath:", args.pdbpath)
+    print("#", "alignFile:", args.alignFile)
+    print("#", "output:", args.output)
+    print("#", "uniprot:", args.uniprot)
+    print("#")
+    print("#", "-"*78)
+    print("#", "-"*78)
+    print("")
 
 
 
@@ -387,12 +387,12 @@ def get_pdb_list(pdb_file, pdb_path, output):
                 out = get_pdb(pdb_id, pdb_chain, pdb_path, output2, fileout)
                 if out:
                     pdb_list.append(out)
-                    print "[DL]", out
+                    print("[DL]", out)
                     extract_fasta(out, output)
                 else:
-                    print "[WARNING]", pdb_id, "not downloaded"
+                    print("[WARNING]", pdb_id, "not downloaded")
             else:
-                print "[WARNING]", pdb_id, "incorrect code"
+                print("[WARNING]", pdb_id, "incorrect code")
     fileout.close()
     return pdb_list
 
@@ -421,7 +421,7 @@ def prepa_seq_uniprot(file_uniprot,output):
                 if not uniprot in uniprot_list:
                     uniprot_list.append(uniprot)
                     phrase = extract_fasta_UniProt(uniprot)
-                    print phrase
+                    print(phrase)
                     if phrase != "" : 
                         write_list_uniprot.append(phrase)
     if len(write_list_uniprot) > 0:
@@ -443,7 +443,7 @@ def extract_fasta_UniProt(uniprot):
         phrase = "> "+uniprot+"\n"+fasta+"\n"
         #print phrase
     else:
-        print "[WARNING] no uniprot id is given"  
+        print("[WARNING] no uniprot id is given")
         phrase = ""          
     return phrase
 
@@ -796,7 +796,7 @@ def HMMSAencode(args, pdb_list):
     for pdb_path in pdb_list:
         pdb_file = os.path.basename(pdb_path)
         pdb_code = pdb_file.split(".")[0]
-        print "[Encode]", pdb_code,
+        print("[Encode]", pdb_code)
         pdb = PDB6.PDB(pdb_path, hetSkip=1)
         geo = pdb.HMMGeo(pdb_path)
         try:
@@ -819,7 +819,7 @@ def HMMSAencode(args, pdb_list):
                 try:
                     temp_encodage = temp_encodage+encode[frag][1]
                 except:
-                    print 'empty case'
+                    print('empty case')
                 temp_encodage = temp_encodage + '-'
                 if len(temp_fasta) < 4 or (len(temp_fasta) >= 4 and len(temp_fasta) == len(temp_encodage)):
                     i = 0
@@ -830,19 +830,19 @@ def HMMSAencode(args, pdb_list):
                             encode_nfo.write("%5s " % temp_index[i-1])
                             # decalage de -1 car index n'intere pas le nom du fragment
                         except:
-                            print 'empty case in all info'
+                            print('empty case in all info')
                         encode_nfo.write(
                             "%s %s %s %s %s\n"
                             % (temp_ca[i][0:8], temp_ca[i][8:16], temp_ca[i][16:], temp_fasta[i-1], temp_encodage[i-1])
                         )
                         i += 1
                 else:
-                    print 'length error'
+                    print('length error')
                 frag += 1
             encode_nfo.close()
             encode_file_to_seq(pdb_code, os.path.join(output, pdb_code+".info"), args)
         except:
-             print "erreur dans l'encodage"
+             print("erreur dans l'encodage")
 
 
 ##LR: comment this function- this function must be removed
@@ -1066,7 +1066,7 @@ def align_sl_seq(args):
             elif os.path.isfile(os.path.join(pdb_dir, prot+".pdb")):
                 pdbFile_nm = os.path.join(pdb_dir, prot+".pdb")
             else:
-                print "[ERROR] path not found"
+                print("[ERROR] path not found")
             #print pdbFile_nm, ch
             if os.path.isfile(pdbFile_nm) :
                 ###transfo le pdbFile en objet PDB
@@ -1160,15 +1160,15 @@ def diff(a, b):
 
 
 def adiff(a, b):
-    print '[ERROR] PDB list and alignement file length mismatch'
+    print('[ERROR] PDB list and alignement file length mismatch')
     diff1 = diff(a, b)
     if diff1:
-        print 'Fasta file',
-        print ' '.join(diff1),
+        print('Fasta file')
+        print(' '.join(diff1))
     diff2 = diff(b, a)
     if diff2:
-        print 'PDB list',
-        print ' '.join(diff2)
+        print('PDB list')
+        print(' '.join(diff2))
     sys.exit()
 
 
@@ -1179,23 +1179,23 @@ def check_size(sizes):
         for i in set(sizes.values()):
             if sizes.values().count(i) > maj_size:
                 maj_size = i
-        print '[ERROR] Alignement length mismatch'
-        print '[BAD LEN] usual', maj_size
+        print('[ERROR] Alignement length mismatch')
+        print('[BAD LEN] usual', maj_size)
         for i in sizes.keys():
             if sizes[i] != maj_size:
-                print '[BAD LEN]', i, sizes[i]
+                print('[BAD LEN]', i, sizes[i])
         sys.exit()
 
 
 
 def check_seq(seq1, seq2):
-    print '[SEQ MISMATCH] Fasta seq'
-    print PDB.split_seq(list(seq1), 80)
-    print '[SEQ MISMATCH] PDB seq  '
-    print PDB.split_seq(list(seq2), 80)
+    print('[SEQ MISMATCH] Fasta seq')
+    print(PDB.split_seq(list(seq1), 80))
+    print('[SEQ MISMATCH] PDB seq  ')
+    print(PDB.split_seq(list(seq2), 80))
     for i in xrange(min(len(seq1),len(seq2))):
         if seq1[i] != seq2[i]:
-            print '[SEQ MISMATCH] PDB:', seq1[i], i+1, seq2[i], ':Fasta'
+            print('[SEQ MISMATCH] PDB:', seq1[i], i+1, seq2[i], ':Fasta')
     sys.exit()
 
 
@@ -1247,7 +1247,7 @@ def check_alignement_input(pdb_list, args):
     pdb_db = os.path.join(args.output, "PDB")
     sizes = {}
     for pdb_id in pdbs:
-        print '[CHECK] aligment input', pdb_id,
+        print('[CHECK] aligment input', pdb_id)
         sizes[pdb_id] = len(pdbs[pdb_id]['align'])
         pdb, ch = pdb_id.split("_")
         if os.path.isfile(os.path.join(pdb_db, pdb_id+".pdb")):
@@ -1261,11 +1261,11 @@ def check_alignement_input(pdb_list, args):
         pdb_obj = PDB.PDB(pdb_path)
         seq = ''.join(pdb_obj.prot.sequence(chain=ch))
         if seq == pdbs[pdb_id]['seq']:
-            print 'sequence OK.',
+            print('sequence OK.')
         else:
-            print '[ERROR] sequence mismatch', pdb_id
+            print('[ERROR] sequence mismatch', pdb_id)
             check_seq(seq, pdbs[pdb_id]['seq'])
-        print 'Alignment length', len(pdbs[pdb_id]['align'])
+        print('Alignment length', len(pdbs[pdb_id]['align']))
     check_size(sizes)
 
     file_input = os.path.join(args.output, args.alignFile)
@@ -1536,7 +1536,7 @@ def clean(args):
             
 def moveProgR(args):
     path_Rfiles = os.path.join(args.output, 'R_files_tmp')
-    print path_Rfiles
+    print(path_Rfiles)
     os.mkdir(path_Rfiles)
     if os.path.isfile(os.path.join(args.output, AA_ALIGN_FILE2)+"_wo_header.aln"):
         os.rename(os.path.join(args.output, AA_ALIGN_FILE2)+"_wo_header.aln", 
@@ -1582,26 +1582,26 @@ if __name__ == "__main__":
             rmtree(args.output)
     os.mkdir(args.output)
 
-    print "- GET PDB"
+    print("- GET PDB")
     pdb_list = extract_pdb(args)
 
-    print "- HMM-SA ENCODING"
+    print("- HMM-SA ENCODING")
     HMMSAencode(args, pdb_list)
 
     if not args.alignFile:
-        print "- ALIGN"
+        print("- ALIGN")
         align_aa_seq(args)
     else:
         check_alignement_input(pdb_list, args)
 
 
-    print "- SL ALIGNMENT"
+    print("- SL ALIGNMENT")
     align_sl_seq(args)
 
-    print "- GRAPH"
+    print("- GRAPH")
     graph(args)
 
-    print "- Generate pymol script"
+    print("- Generate pymol script")
     gen_pml(args)
 
     #clean(args)
@@ -1609,11 +1609,11 @@ if __name__ == "__main__":
     moveProgR(args)
     
     total_time = time.strftime('%H:%M:%S', time.gmtime(time.time()-start_time))
-    print "\n-- Time:", str(total_time)
-    print ''
-    print '*'*80
-    print '*'*80
-    print ''
+    print("\n-- Time:", str(total_time))
+    print('')
+    print('*'*80)
+    print('*'*80)
+    print('')
     
     
     
