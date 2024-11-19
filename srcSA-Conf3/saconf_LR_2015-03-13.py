@@ -1193,7 +1193,7 @@ def check_seq(seq1, seq2):
     print(PDB.split_seq(list(seq1), 80))
     print('[SEQ MISMATCH] PDB seq  ')
     print(PDB.split_seq(list(seq2), 80))
-    for i in xrange(min(len(seq1),len(seq2))):
+    for i in range(min(len(seq1), len(seq2))):
         if seq1[i] != seq2[i]:
             print('[SEQ MISMATCH] PDB:', seq1[i], i+1, seq2[i], ':Fasta')
     sys.exit()
@@ -1573,7 +1573,7 @@ if __name__ == "__main__":
     if os.path.isdir(args.output):
         fail = True
         while fail:
-            response = raw_input("[Warning] "+args.output+' exists. Erase folder? (y/n) ')
+            response = input(f"[Warning] {args.output} exists. Erase folder? (y/n) ")
             if response in ['y', 'n']:
                 fail = False
         if response == 'n':
