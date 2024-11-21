@@ -805,35 +805,35 @@ class residue(atmList):
 		return res
 
 
-def listAltBB_ca(self):
-		lAltBB = []
-		if self.hasAltAtms()[0]=="Yes":
-			for iAtm in range(0,len(self.atms)):
-				aAtm = self.atms[iAtm]
-				if aAtm.atmName()=="CA":
-					lAltBB.append(aAtm[16])
-				lAltBB.sort()
-			return(lAltBB)
+	def listAltBB_ca(self):
+			lAltBB = []
+			if self.hasAltAtms()[0]=="Yes":
+				for iAtm in range(0,len(self.atms)):
+					aAtm = self.atms[iAtm]
+					if aAtm.atmName()=="CA":
+						lAltBB.append(aAtm[16])
+					lAltBB.sort()
+				return(lAltBB)
 
 
 
 
-def tutu(self,verbose = 0):
-	toto= self.atms[0].atmName()
-	return toto
+	def tutu(self,verbose = 0):
+		toto= self.atms[0].atmName()
+		return toto
 
 
 
 
-def BBAtmMiss(self, verbose = 0):
-	missp = []
-	for atms in AABB:
-		if self.atms.atmPos(atms) == "None":
-			missp.append(atms)
-			break
-	if verbose:
-		print(missp)
-	return missp
+	def BBAtmMiss(self, verbose = 0):
+		missp = []
+		for atms in AABB:
+			if self.atms.atmPos(atms) == "None":
+				missp.append(atms)
+				break
+		if verbose:
+			print(missp)
+		return missp
 
 ## ========================================
 ## The PDB file parser
