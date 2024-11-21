@@ -11,9 +11,9 @@ import os
 import re
 import sys
 import time
-import urllib2
+import urllib
 import collections
-from math import sqrt, pi
+from math import sqrt, pi, acos
 from random import randint
 
 #
@@ -86,8 +86,8 @@ def ask_to_user(text, values):
     """ prompt: question to user, while valid answer """
     fail = True
     while fail:
-        response = raw_input(text+' (choices ['+' '.join(values)+']): ')
-        print '> Choice', response
+        response = input(text+' (choices ['+' '.join(values)+']): ')
+        print('> Choice', response)
         if response in values:
             fail = False
     return response
@@ -122,13 +122,13 @@ def angle(l, c, r):
     def num(l, c, r):
         """ numerator """
         somme = 0
-        for p in xrange(3):
+        for p in range(3):
             somme += ((l[p]-c[p])*(r[p]-c[p]))
         return somme
     def denom(l, c, r):
         """ denominator """
         s1, s2 = 0, 0
-        for p in xrange(3):
+        for p in range(3):
             s1 += ((l[p]-c[p])**2)
             s2 += ((r[p]-c[p])**2)
         return sqrt(s1)*sqrt(s2)
@@ -151,10 +151,10 @@ def fetch_pdb(pdb_id, path="./"):
     while True and attempts < 5:
         attempts += 1
         try:
-            content = urllib2.urlopen(url)
+            content = urllib.request.urlopen(url)
             content = content.read()
             break
-        except Exception, ex:
+        except Exception as ex:
             if re.findall("403", str(ex)):
                 time.sleep(randint(5, 10)/10.0)
             else:
@@ -168,7 +168,7 @@ def fetch_pdb(pdb_id, path="./"):
 
 def split_seq(seq, step):
     '''carriage return in sequence every n nucleotides'''
-    for i in xrange(0, len(seq)+step, step+1):
+    for i in range(0, len(seq)+step, step+1):
         seq.insert(i, '\n')
     return ''.join(seq)[1:-1]
 
@@ -440,7 +440,7 @@ class Protein(object):
         ca_atoms = ['HETATM'+l[6:-1] for l in lines \
               if l[12:16].replace(' ', '') in ['CA', 'C']]
         ca_atoms.sort()
-        for i in xrange(0, len(ca_atoms)-2):
+        for i in range(0, len(ca_atoms)-2):
             if euc_dist(ca_atoms[i], ca_atoms[i+1]) > 4:
                 return False
         return True
@@ -694,7 +694,7 @@ class Protein(object):
                         if (atom.name == 'N' and next_atom.name in ['CA', 'HN']) or flag:
                             res_counter += 1
                             if display:
-                                print atom.res_uid, res_counter
+                                print(atom.res_uid, res_counter)
                     previous_atom = Atom(line)
                 new_lines.append(str(line[:6]+"%5d"+line[11:22]+"%4d"+' '+line[27:])
                         % (atom_counter, res_counter))
@@ -739,9 +739,9 @@ class Protein(object):
         N = len(self.protein_atoms)
         max1, max2, max3 = 0, 0, 0
         inertia1, inertia2, inertia3 = [], [], []
-        for i in xrange(0, N-2):
+        for i in range(0, N-2):
             if Atom(self.protein_atoms[i]).name == 'CA':
-                for j in xrange(i, N-1):
+                for j in range(i, N-1):
                     if Atom(self.protein_atoms[j]).name == 'CA':
                         d = euc_dist(self.protein_atoms[i], self.protein_atoms[j])
                         if d > max1:
@@ -802,7 +802,7 @@ class Protein(object):
             if chain in self.chain_list:
                 return Chain(self.chains[chain]).sequence()
             else:
-                print chain, 'not in', self.chain_list
+                print(chain, 'not in', self.chain_list)
         return seq
 
     def fasta(self, chain='*', concat=False, split=True):
@@ -934,7 +934,7 @@ class PDB(object):
             dl_path = fetch_pdb(pdb)
             if dl_path:
                 self.path = dl_path
-                print "%s pdb %s is downloaded" % (NFO_PREF, self.path)
+                print("%s pdb %s is downloaded" % (NFO_PREF, self.path))
         # .. else : error !
         else:
             sys.exit("%s PDB file doesn't exist or incorrect path: %s" % (ERR_PREF,pdb))

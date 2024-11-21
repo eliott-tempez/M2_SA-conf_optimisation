@@ -5,7 +5,7 @@ import os
 import copy
 import math
 import gzip
-## import bz2
+import bz2
 
 def simpleload(fname, verbose = 0):
 	try:

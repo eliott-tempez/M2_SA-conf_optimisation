@@ -17,7 +17,7 @@ import copy
 import math
 import gzip
 import types
-import popen2
+import subprocess
 import re
 
 from FileBasics import *
@@ -152,6 +152,12 @@ def aln2mask(s1,s2):
 			res = res + s1[i]
 	return res
 
+# 
+# implement python 2's apply function
+#
+def apply(func, args, kwargs=None):
+    return func(*args) if kwargs is None else func(*args, **kwargs)
+
 #
 # any PDB line
 #
@@ -159,8 +165,8 @@ class PDBLine:
 	def __init__(self, aLine = ""):
 		self.txt = aLine
 
- 	def __getslice__(self,ffrom=0,tto=-1):
- 		return self.txt[ffrom:tto]
+	def __getslice__(self,ffrom=0,tto=-1):
+		return self.txt[ffrom:tto]
 
 	def __repr__(self):
 		return str(self.txt)
@@ -209,7 +215,7 @@ class atmLine(PDBLine):
 			anum=string.split(self.txt[6:11])[0]
 			return anum
 		except ValueError:
-			print "Incorrect ATOM line format for:", self.txt
+			print("Incorrect ATOM line format for:", self.txt)
 			return "UNK"
 
 	def atmName(self, aname = ""):
@@ -220,7 +226,7 @@ class atmLine(PDBLine):
 			rnum=string.split(self.txt[12:16])[0]
 			return rnum
 		except ValueError:
-			print "Incorrect ATOM line format for:", self.txt
+			print("Incorrect ATOM line format for:", self.txt)
 			return "UNK"
 
 	def alt(self, acode = ""):
@@ -231,7 +237,7 @@ class atmLine(PDBLine):
 			alt=self.txt[16]
 			return alt
 		except ValueError:
-			print "Incorrect ATOM line format for:", self.txt
+			print("Incorrect ATOM line format for:", self.txt)
 			return " "
 		
 	def resName(self, rName = ""):
@@ -242,7 +248,7 @@ class atmLine(PDBLine):
 			rname=string.split(self.txt[17:20])[0]
 			return rname
 		except ValueError:
-			print "Incorrect ATOM line format for:", self.txt
+			print("Incorrect ATOM line format for:", self.txt)
 			return "UNK"
 		
 	def chnLbl(self, lbl = ""):
@@ -253,7 +259,7 @@ class atmLine(PDBLine):
 			lbl=self.txt[21]
 			return lbl
 		except ValueError:
-			print "Incorrect ATOM line format for:", self.txt
+			print("Incorrect ATOM line format for:", self.txt)
 			return "UNK"
 
 	def resNum(self, rnum = ""):
@@ -264,7 +270,7 @@ class atmLine(PDBLine):
 			rnum=string.split(self.txt[22:26])[0]
 			return rnum
 		except ValueError:
-			print "Incorrect ATOM line format for:", self.txt
+			print("Incorrect ATOM line format for:", self.txt)
 			return "UNK"
 
 	def icode(self, thecode = ""):
@@ -275,7 +281,7 @@ class atmLine(PDBLine):
 			icode=self.txt[26]
 			return icode
 		except ValueError:
-			print "Incorrect ATOM line format for:", self.txt
+			print("Incorrect ATOM line format for:", self.txt)
 			return " "
 		
 	def xyz(self):
@@ -285,7 +291,7 @@ class atmLine(PDBLine):
 			z=string.split(self.txt[46:54])[0]
 			return float(x), float(y), float(z)
 		except ValueError:
-			print "Incorrect ATOM line format for:", self.txt
+			print("Incorrect ATOM line format for:", self.txt)
 			return 0., 0., 0.
 
 	def crds(self):
@@ -379,30 +385,30 @@ class atmList(atmLine):
 		# from PDB: just retain PDB.data field
 		if isinstance(data,PDB):
 			if verbose == 2:
-				print "atmList from PDB"
+				print("atmList from PDB")
 			self.list = data.data
 		# from residue: just retain residue.list field
 		elif isinstance(data,residue):
 			if verbose == 2:
-				print "atmList from residue"
+				print("atmList from residue")
 			self.list = data.atms
 		# from atmList: just propagate
 		elif isinstance(data,atmList):
 			if verbose == 2:
-				print "atmList from atmList"
+				print("atmList from atmList")
 			self.list = data.list
 		# from atmLine: just wrap
 		elif isinstance(data,atmLine):
 			## We force one line as a residue
 			if verbose == 2:
-				print "atmList  from atmLine"
+				print("atmList  from atmLine")
 			## print data
 			self.list = []
 			self.list.append(data)
 		# from list: suppose a list of atomic lines
 		elif isinstance(data,types.ListType):
 			if verbose == 2:
-				print "atmList from ListType"
+				print("atmList from ListType")
 			## print len(data)
 			self.list = []
 			for aLine in data:
@@ -410,7 +416,7 @@ class atmList(atmLine):
 
 		else:
 			if verbose == 2:
-				print "atmList from unknown"
+				print("atmList from unknown")
 			self.list  = []
 
 	def __len__(self):
@@ -418,7 +424,7 @@ class atmList(atmLine):
 
 	# return atmList
 	def __add__(self,new):
-		print "__add__.atmList"
+		print("__add__.atmList")
 		return atmList(self.list[:] + new.list[:])
 
 	# return sub atmList
@@ -546,7 +552,7 @@ class atmList(atmLine):
 			c = self.theAtm(aChi[2]).xyz()
 			d = self.theAtm(aChi[3]).xyz()
 			res.append(apply(dihedral,a+b+c+d))
- 		return res
+		return res
 
 	def chis(self):
 
@@ -556,14 +562,14 @@ class atmList(atmLine):
 			return res
 		for aRes in range(0,len(self)):
 			res.append(self[aRes].oneChis())
- 		return res
+		return res
 
 	def outChis(self):
 		chis = self.chis()
 		for i in chis:
-			print i[0],
+			print(i[0], end=' ')
 			for j in i[1:]:
-				print j,
+				print(j, end=' ')
 			print
 			
 	def atmPos(self, aName):
@@ -605,7 +611,7 @@ class atmList(atmLine):
 
 	def resName(self):
 		return atmLine(self.list[0]).resName()
-	
+
 	def theAtm(self,atmName = ""):
 		for aLine in self.list:
 			if atmLine(aLine).atmName() == atmName:
@@ -626,7 +632,7 @@ class atmList(atmLine):
 		f.write("HEADER %s (%d residues)\n" % (label, len(self)))
 		for aAtm in self.list:
 			f.write("%s" % aAtm)
-	
+
 
 	def oneHMMGeo(self, aCA):
 		CA1x, CA1y, CA1z = self[aCA].xyz()
@@ -745,7 +751,7 @@ class residue(atmList):
 			for atm in self.atms:
 				atm.chnLbl(lbl)
 
- 	def atmPos(self, aName):
+	def atmPos(self, aName):
 		return self.atms.atmPos(aName)
 
 	def hasAltAtms(self,verbose = 0):
@@ -782,9 +788,9 @@ class residue(atmList):
 		res = atmList()
 		lAltBB_ca = self.listAltBB_ca()
 		if len(lAltBB_ca) > 0 :
-		        alt_bb = lAltBB_ca[0]
+				alt_bb = lAltBB_ca[0]
 		else:
-		        alt_bb = " "
+				alt_bb = " "
 		for iAtm in range(0,len(self.atms)):
 			if awhat == [""]:
 				res.list.append(atmLine(self.atms[iAtm].txt))
@@ -799,35 +805,35 @@ class residue(atmList):
 		return res
 
 
-	def listAltBB_ca(self):
-	        lAltBB = []
-	        if self.hasAltAtms()[0]=="Yes":
-        		for iAtm in range(0,len(self.atms)):
-                                aAtm = self.atms[iAtm]
-        		        if aAtm.atmName()=="CA":
-                                        lAltBB.append(aAtm[16])
-                        lAltBB.sort()
-                return(lAltBB)
+def listAltBB_ca(self):
+		lAltBB = []
+		if self.hasAltAtms()[0]=="Yes":
+			for iAtm in range(0,len(self.atms)):
+				aAtm = self.atms[iAtm]
+				if aAtm.atmName()=="CA":
+					lAltBB.append(aAtm[16])
+				lAltBB.sort()
+			return(lAltBB)
 
 
 
 
-	def tutu(self,verbose = 0):
-		toto= self.atms[0].atmName()
-		return toto
+def tutu(self,verbose = 0):
+	toto= self.atms[0].atmName()
+	return toto
 
 
 
 
-	def BBAtmMiss(self, verbose = 0):
-		missp = []
-		for atms in AABB:
-			if self.atms.atmPos(atms) == "None":
-				missp.append(atms)
-				break
-		if verbose:
-			print missp
-		return missp
+def BBAtmMiss(self, verbose = 0):
+	missp = []
+	for atms in AABB:
+		if self.atms.atmPos(atms) == "None":
+			missp.append(atms)
+			break
+	if verbose:
+		print(missp)
+	return missp
 
 ## ========================================
 ## The PDB file parser
@@ -950,7 +956,7 @@ class PDB(PDBLine,residue):
 			try:
 				f = open(outName,fmode)
 			except:
-				print "Failed to write to ",outName
+				print("Failed to write to ",outName)
 
 		for aCrd in res:
 			f.write("%s\n" % aCrd)
@@ -969,7 +975,7 @@ class PDB(PDBLine,residue):
  
 		try:
 			if verbose:
-				print "Trying: ",fname
+				print("Trying: ",fname)
 			allPDB=gsimpleload(fname, 0)
 		except IOError:
 
@@ -980,19 +986,19 @@ class PDB(PDBLine,residue):
 			try:
 			## Experimental structure
 				if verbose:
-					print "Trying: ",PDBDIR+"/all/pdb/pdb"+pdbEntry+".ent.Z"
+					print("Trying: ",PDBDIR+"/all/pdb/pdb"+pdbEntry+".ent.Z")
 				allPDB=gsimpleload(PDBDIR+"/all/pdb/pdb"+pdbEntry+".ent.Z",0)
 			except IOError:
 				if verbose:
-					print "Failed"
+					print("Failed")
 			## Model structure
 				try:
 					if verbose:
-						print "Attempting: ",PDBDIR+"/models/current/pdb/"+pdbEntry[1:3]+"/pdb"+pdbEntry+".ent.Z"
+						print("Attempting: ",PDBDIR+"/models/current/pdb/"+pdbEntry[1:3]+"/pdb"+pdbEntry+".ent.Z")
 					allPDB=gsimpleload(PDBDIR+"/models/current/pdb/"+pdbEntry[1:3]+"/pdb"+pdbEntry+".ent.Z",0)
 				except IOError:
 					if verbose:
-						print 'Sorry: PDB entry ',pdbEntry,'not found'
+						print('Sorry: PDB entry ',pdbEntry,'not found')
 					raise UnboundLocalError
 			
 	
@@ -1095,8 +1101,8 @@ class PDB(PDBLine,residue):
 		atmFrom = 0
 
 		if len(self.atms) == 0:
-		       print "Empty PDB instance"
-		       return
+			print("Empty PDB instance")
+			return
 		for iAtm in range(0,len(self.atms)):
 			aAtm = self.atms[iAtm]
 		
@@ -1117,7 +1123,7 @@ class PDB(PDBLine,residue):
 					atmFrom = iAtm
 		self.rt.append(residue(self.atms[atmFrom:iAtm+1]))
 		if verbose:
-			print " Found ",len(self.rt),' residues'
+			print(" Found ",len(self.rt),' residues')
 
 
 	#
@@ -1132,11 +1138,11 @@ class PDB(PDBLine,residue):
 	def setModel(self,model = 1,verbose = 0):
 
 		if model > self.nModels:
-			print "Sorry: no model number ",model," (Total of ",self.nModels,")"
+			print("Sorry: no model number ",model," (Total of ",self.nModels,")")
 			return
 		self.atms = []
 		if verbose:
-			print "Installing model ",model," (atoms ",self.mdls[model-1]," - ",self.mdls[model],")"
+			print("Installing model ",model," (atoms ",self.mdls[model-1]," - ",self.mdls[model],")")
 		for aLine in range(self.mdls[model-1],self.mdls[model]):
 			self.atms.append(atmLine(self.data[aLine]))
 		self.curMdl = model
@@ -1219,11 +1225,11 @@ class PDB(PDBLine,residue):
 					if verbose:
 						if unres.count(resName) == 0:
 							unres.append(resName)
-							print unres
-							print "Unknown residue type (1)",resName
+							print(unres)
+							print("Unknown residue type (1)",resName)
 
 			if verbose:
-				print "nAA : ",nAA," nNA : ",nDNA + nRNA," nHET : ",nHET
+				print("nAA : ",nAA," nNA : ",nDNA + nRNA," nHET : ",nHET)
 			nOTHER = nHET + nDNA + nRNA
 			if nOTHER < nAA:
 				res.append("Protein")
@@ -1284,7 +1290,7 @@ class PDB(PDBLine,residue):
 		return PDB(res)
 
 	# retourne le champ Header du fichier PDB
- 	def header(self):
+	def header(self):
 		title=''
 		for Line in self.info:
 			if Line[:6]=='HEADER':
@@ -1299,49 +1305,49 @@ class PDB(PDBLine,residue):
 
 
 
-        # add by Leslie REGAD
-        # retourne le titre du fichier pdb (Title champs)
-        def Titre_pdb(self, verbose = 0):
+	# add by Leslie REGAD
+	# retourne le titre du fichier pdb (Title champs)
+	def Titre_pdb(self, verbose = 0):
 		titre=""
 		for Line in self.info:
 			#if re.search('TITLE',Line):
-                        if Line[0:5] == "TITLE": 
-  	                  titre = titre+Line
-                titreModif = titre.replace("\n","").replace("TITLE","")
-    	        return(titreModif)
+			if Line[0:5] == "TITLE": 
+				titre = titre+Line
+			titreModif = titre.replace("\n","").replace("TITLE","")
+			return(titreModif)
 	
 
 
-        # add by Leslie REGAD
-        # retourne les HETATM contenu dans le fichier
-        def get_HETATM(self, verbose = 0):
+	# add by Leslie REGAD
+	# retourne les HETATM contenu dans le fichier
+	def get_HETATM(self, verbose = 0):
 		hetList=[]
 		occHetList=[]
 
 		for Line in self.info:
-                        if Line[0:4] == "HET ": 
-  	                  hetList.append(Line.split()[1])
-  	        hetListU = list(set(hetList))
-  	        for het in hetListU : 
-  	            occHetList.append(hetList.count(het))
-    	        return(hetListU,occHetList)
+			if Line[0:4] == "HET ": 
+				hetList.append(Line.split()[1])
+			hetListU = list(set(hetList))
+			for het in hetListU : 
+				occHetList.append(hetList.count(het))
+				return(hetListU,occHetList)
 
 
 
-        # add by Leslie REGAD
-        # retourne les codes UniProt pour chaque chaine
-        def get_UniProtId(self, verbose = 0):
+	# add by Leslie REGAD
+	# retourne les codes UniProt pour chaque chaine
+	def get_UniProtId(self, verbose = 0):
 		UNPList=[]
 		for Line in self.dbref :
-  	            List1 = str(Line).split()
-  	            if List1[5]=="UNP":
-  	                ph = List1[2]+":"+List1[6]+":"+List1[8]+"-"+List1[9]
-  	                UNPList.append(ph)
-    	        return(UNPList)
+			List1 = str(Line).split()
+			if List1[5]=="UNP":
+				ph = List1[2]+":"+List1[6]+":"+List1[8]+"-"+List1[9]
+				UNPList.append(ph)
+			return(UNPList)
 
 
 	# Nature du fichier
- 	def compound(self):
+	def compound(self):
 		title=''
 		for Line in self.info:
 			if Line[:6]=='COMPND':
@@ -1354,7 +1360,7 @@ class PDB(PDBLine,residue):
 				
 
 	# Provenance de la molecule
- 	def source(self):
+	def source(self):
 		title=''
 		for Line in self.info:
 			if Line[:6]=='SOURCE':
@@ -1367,11 +1373,11 @@ class PDB(PDBLine,residue):
 
 			
 	# Auteur
- 	def author(self):
+	def author(self):
 		title=''
 		for Line in self.info:
 			if Line[:6]=='AUTHOR':
-				print Line
+				print(Line)
 				items = string.split(Line[6:70])
 				for aItem in items:
 					if title != '':
@@ -1396,7 +1402,7 @@ class PDB(PDBLine,residue):
 		return keylist
 
 	# Date de creation du fichier
- 	def date(self):
+	def date(self):
 		date=''
 		for Line in self.info:
 			if Line[:6]=='HEADER':
@@ -1412,7 +1418,7 @@ class PDB(PDBLine,residue):
 		return self.revdate()
 
 	# Revision date (supposes last revision is first REVDAT
- 	def revdate(self):
+	def revdate(self):
 		date=''
 		for Line in self.info:
 			if Line[:6]=='REVDAT':
@@ -1517,8 +1523,8 @@ class PDB(PDBLine,residue):
 						if string.find(Line,' R '):
 							checkRValue = 2
 					if verbose:
-						print Line[:-1]
-						print Line[startPos:-1]
+						print(Line[:-1])
+						print(Line[startPos:-1])
 					if string.find(Line,'.', startPos) != -1:
 						pos=string.find(Line,'.', startPos)-1
 						toPos = pos+5
@@ -1527,7 +1533,7 @@ class PDB(PDBLine,residue):
 							toPos = string.find(Line,'.', pos+2)
 						try:
 							R_VALUE=float(Line[pos:toPos])
-							print R_VALUE
+							print(R_VALUE)
 						except ValueError:
 							if Line[pos] == 'O':
 								try:
@@ -1601,11 +1607,11 @@ class PDB(PDBLine,residue):
 			if string.find(aLine[12:15],"CA")==-1:
 				res="No"
 				if verbose:
-					print 'pas uniquement les CA'
+					print('pas uniquement les CA')
 				return res
 				break
 		if verbose:
-			print 'uniquement les CA'
+			print('uniquement les CA')
 		return res
 		
 
@@ -1624,7 +1630,7 @@ class PDB(PDBLine,residue):
 			for atm in self[i].atms:
 				chaine=chaine+atm.atmName()+' '
 			if verbose:
-				print chaine
+				print(chaine)
 			missp = 0
 			for atms in AASC[aaTpe]:
 				if string.find(chaine,atms)==-1:
@@ -1747,17 +1753,17 @@ class PDB(PDBLine,residue):
 			if aN != "None":
 				Nx, Ny, Nz = aRes[aN].xyz()
 				theN = aRes[aN]
-                        if aC != "None":
+			if aC != "None":
 				if theN.chnLbl() == theC.chnLbl():
 					aDist = distance(Nx, Ny, Nz, Cx, Cy, Cz)
 					if aDist > 1.50 and aDist < 3.:
 						if verbose:
-							print "Poor peptidic bond of ",aDist," for ", theC.resName(), theC.resNum(), theN.resName(), theN.resNum()
+							print("Poor peptidic bond of ",aDist," for ", theC.resName(), theC.resNum(), theN.resName(), theN.resNum())
 						if BBGeoOK == "Ok":
 							BBGeoOK = "Poor"
 					elif aDist > 3.:
 						if verbose:
-							print "Bad peptidic bond  of ",aDist," for :", theC.resName(), theC.resNum(), theN.resName(), theN.resNum()
+							print("Bad peptidic bond  of ",aDist," for :", theC.resName(), theC.resNum(), theN.resName(), theN.resNum())
 						BBGeoOK = "Bad"
 			aC  = aRes.atmPos("C")
 			if aC != "None":
@@ -1769,7 +1775,7 @@ class PDB(PDBLine,residue):
 	# 
 	# Check if BB peptidic geometry is correct (distance)
 	# 
-	def traceCheck(self,hetSkip = 0, verbose = 0):
+	def traceCheck(self,fname,hetSkip = 0, verbose = 0):
 		theTrace = self.select(awhat=["CA"])
 		CisWarning = "None"
 		hasCisPRO = "No"
@@ -1786,15 +1792,15 @@ class PDB(PDBLine,residue):
 				x1, y1, z1 = theTrace[aRes - 1][0].xyz()
 			except ValueError:
 				if verbose:
-					print fname," Sorry: fname incorrect ATOM format for:", theTrace[aRes - 1]
-                                return CisWarning,"No"
+					print("Sorry: incorrect ATOM format for:", theTrace[aRes - 1])
+					return CisWarning,"No"
 
 			try:
 				x2, y2, z2 = theTrace[aRes][0].xyz()
 			except ValueError:
 				if verbose:
-					print fname," Sorry: fname incorrect ATOM format for:", theTrace[aRes]
-                                return CisWarning,"No"
+					print(" Sorry: fname incorrect ATOM format for:", theTrace[aRes])
+					return CisWarning,"No"
 			aDist = distance(x1, y1, z1, x2, y2, z2)
 			
 			if aDist < 3.60: # CIS peptide
@@ -1832,7 +1838,7 @@ class PDB(PDBLine,residue):
 				tracePB  = tracePB + resLabel
 				traceOK = "Bad"
 				if verbose:
-					print "Bad Trace for ",theTrace[aRes-1]
+					print("Bad Trace for ",theTrace[aRes-1])
 
 		return traceOK, tracePB, nCISPRO, CISPRO, nCISPep, CISPep
 
@@ -1865,14 +1871,17 @@ class PDB(PDBLine,residue):
 		else:
 			cmd = BINPATH+"/HMMPred -iMdl "+MODEL+" -idst stdin -noconfmat 2> /dev/null"
 		if verbose:
-			print cmd
+			print(cmd)
 
-		# popen2: do not break prints
+		# popen: do not break prints
 		oristdout = sys.stdout
-		fin, sys.stdout = popen2.popen2(cmd)
-		print len(dst7)
+		process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		fin = process.stdout
+		sys.stdout = process.stdout
+  
+		print(len(dst7))
 		for i in dst7:
-			print i
+			print(i)
 		sys.stdout.close()
 		sys.stdout = oristdout
 
@@ -1888,11 +1897,11 @@ class PDB(PDBLine,residue):
 		res = []
 		for chId in chList:
 			if verbose:
-				print "Encoding chaing \""+chId+"\""
+				print("Encoding chaing \""+chId+"\"")
 			curChn = self[chId]
 			if verbose:
-				print curChn[0]
-				print curChn[-1]
+				print(curChn[0])
+				print(curChn[-1])
 			nFrg, frgList = curChn.frgList()
 			if chId == " ":
 				chId = ""
@@ -1918,13 +1927,13 @@ class PDB(PDBLine,residue):
 		res = []
 		for chId in chList:
 			if verbose:
-				print "Encoding chain \""+chId+"\""
+				print("Encoding chain \""+chId+"\"")
 			curChn = self[chId]
 			if verbose:
-				print curChn[0]
-				print curChn[-1]
+				print(curChn[0])
+				print(curChn[-1])
 			nFrg, frgList = curChn.frgList()
-			print nFrg
+			print(nFrg)
 			if chId == " ":
 				chId = ""
 
@@ -1994,7 +2003,7 @@ class PDB(PDBLine,residue):
 
 			curdex = 0
 			for i in frgList:
-				print "newfrag"
+				print("newfrag")
 				curdex = curdex + 1
 
 				curId = theId
@@ -2123,7 +2132,7 @@ class PDB(PDBLine,residue):
 	def chnCAFrgList(self, chId = "", maxDist = 4.10): #x = PDB("12as")
 
 		if chId == "" and len(self.chnList()) > 1:
-			print "PDB.chnFrgList() : cannot handle several chains as \""+self.chnList()+"\""
+			print("PDB.chnFrgList() : cannot handle several chains as \""+self.chnList()+"\"")
 			return []
 		res = []
 		oriRes = 0
@@ -2203,7 +2212,7 @@ class PDB(PDBLine,residue):
 	def chnFrgList(self, chId = "", maxDist = 1.7): #x = PDB("12as")
 
 		if chId == "" and len(self.chnList()) > 1:
-			print "PDB.chnFrgList() : cannot handle several chains as \""+self.chnList()+"\""
+			print("PDB.chnFrgList() : cannot handle several chains as \""+self.chnList()+"\"")
 			return []
 		res = []
 		oriRes = 0
@@ -2326,7 +2335,7 @@ class PDB(PDBLine,residue):
 			elif AA3.count(aRes.rName()):
 				rName = aRes.rName()
 				if verbose:
-					print "Unfrequent residue type: ",
+					print("Unfrequent residue type: ", end=' ')
 				if rName == "MSE": # seleno MET
 					res = res+"M"
 				elif rName == "CSE": # seleno CYS
@@ -2350,8 +2359,8 @@ class PDB(PDBLine,residue):
 			else:
 				if unres.count(aRes.rName()) == 0:
 					unres.append(aRes.rName())
-					print "Unknown residue type (2): ",aRes.rName()
-					print unres
+					print("Unknown residue type (2): ",aRes.rName())
+					print(unres)
 		return res
 
 
@@ -2481,7 +2490,7 @@ class protein(PDB):
 				self.tpe.append(idex)
 			else:
 				if unres.count(atmLine(aLine).resName()) == 0:
-					print "Unknown residue type (3): ",atmLine(aLine).resName()
+					print("Unknown residue type (3): ",atmLine(aLine).resName())
 					unres.append(atmLine(aLine).resName())
 				self.tpe.append(-1)
 				
@@ -2594,15 +2603,15 @@ class protein(PDB):
 	def outSeq(self, label, hetSkip = 0, verbose = 0):
 		theTrace = self.trace("","",hetSkip, verbose)
 		seq = protein(theTrace).aaseq()
-		print "> ",label,len(seq)
+		print("> ",label,len(seq))
 		while len(seq) > 0:
-			print seq[:80]
+			print(seq[:80])
 			seq = seq[80:]
 
 	def outRawSeq(self, hetSkip = 0, verbose = 0):
 		theTrace = self.trace("","",hetSkip, verbose)
 		seq = protein(theTrace).aaseq()
-		print seq
+		print(seq)
 
 	def aaseq(self, verbose = 0):
 		res = ""
@@ -2612,7 +2621,7 @@ class protein(PDB):
 				res = res + AA1[AA3STRICT.index(aRes[0].resName())]
 			elif AA3.count(aRes[0].resName()):
 				if verbose:
-					print "Unfrequent residue type: ",aRes[0].resName()
+					print("Unfrequent residue type: ",aRes[0].resName())
 				if aRes[0].resName() == "MSE": # seleno MET
 					res = res+"M"
 				elif aRes[0].resName() == "CSE": # seleno CYS
@@ -2636,8 +2645,8 @@ class protein(PDB):
 			else:
 				if unres.count(aRes[0].resName()) == 0:
 					unres.append(aRes[0].resName())
-					print "Unknown residue type (2): ",aRes[0].resName()
-					print unres
+					print("Unknown residue type (2): ",aRes[0].resName())
+					print(unres)
 		return res
 	
 	def frg(self,whatFrg, frgs = []):
@@ -2782,17 +2791,17 @@ class protein(PDB):
 			aN = aRes.Npos()
 			if aN != "None":
 				Nx, Ny, Nz = aRes[aN].xyz()
-                        if aC != "None":
-                                aDist = distance(Nx, Ny, Nz, Cx, Cy, Cz)
-                                if aDist > 1.50 and aDist < 3.:
-                                        if verbose:
-                                                print "Poor peptidic bond of ",aDist," for ", resName(theChain[aC]), resNum(theChain[aC]), resName(theChain[aN]), resNum(theChain[aN])
-                                        if BBGeoOK == "Ok":
-                                                BBGeoOK = "Poor"
-                                elif aDist > 3.:
-                                        if verbose:
-                                                print "Bad peptidic bond  of ",aDist," for :", resName(theChain[aC]), resNum(theChain[aC]), resName(theChain[aN]), resNum(theChain[aN])
-                                        BBGeoOK = "Bad"
+				if aC != "None":
+					aDist = distance(Nx, Ny, Nz, Cx, Cy, Cz)
+					if aDist > 1.50 and aDist < 3.:
+						if verbose:
+							print("Poor peptidic bond of ",aDist," for ", aRes.resName(), aRes.resNum(), aRes.resName(), aRes.resNum())
+						if BBGeoOK == "Ok":
+							BBGeoOK = "Poor"
+					elif aDist > 3.:
+						if verbose:
+							print("Bad peptidic bond  of ",aDist," for :", aRes.resName(), aRes.resNum(), aRes.resName(), aRes.resNum())
+							BBGeoOK = "Bad"
 			aC  = aRes.Cpos()
 			if aC != "None":
 				Cx, Cy, Cz = aRes[aC].xyz()
@@ -2816,15 +2825,15 @@ class protein(PDB):
 				x1, y1, z1 = theTrace[aRes - 1].xyz()
 			except ValueError:
 				if verbose:
-					print fname," Sorry: fname incorrect ATOM format for:", theTrace[aRes - 1]
-                                return CisWarning,"No"
+					print(" Sorry: fname incorrect ATOM format for:", theTrace[aRes - 1])
+					return CisWarning,"No"
 
 			try:
 				x2, y2, z2 = theTrace[aRes].xyz()
 			except ValueError:
 				if verbose:
-					print fname," Sorry: fname incorrect ATOM format for:", theTrace[aRes]
-                                return CisWarning,"No"
+					print(" Sorry: fname incorrect ATOM format for:", theTrace[aRes])
+					return CisWarning,"No"
 			aDist = distance(x1, y1, z1, x2, y2, z2)
 			
 			if aDist < 3.60: # CIS peptide
@@ -2853,7 +2862,7 @@ class protein(PDB):
 			if aDist > 4.10: # mauvaise geometrie
 				traceOK = "No"
 				if verbose:
-					print "Bad Trace for ",theTrace[aRes-1]
+					print("Bad Trace for ",theTrace[aRes-1])
 
 		return CisWarning, hasCisPRO, hasCisPEP, traceOK, nCISPRO, CISPRO, nCISPep, CISPep
 
@@ -2932,7 +2941,7 @@ class protein(PDB):
 					d = self[aPos+1].theAtm("CA").xyz()
 					ome = apply(dihedral,a+b+c+d)
 			res.append([phi,psi,ome])
- 		return res
+		return res
 
 
 	def SGList(self):
@@ -2981,7 +2990,7 @@ class protein(PDB):
 		return  PDB(res)			
 
 	def HMMGeo(self, theId):
-		print "appel fonction 2 "
+		print("appel fonction 2 ")
 		theTrace = self.trace()
 		self.dst7 = []
 		for aCA in range(0,len(theTrace)-3):

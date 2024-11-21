@@ -166,7 +166,7 @@ def header(args):
     print("#", "-"*78)
     print("#", "-"*78)
     print("#", " "*35, "SA-conf")
-    print("#     ")
+    print("#     ", end=' ')
     print("a tool to analyse to compare fastly protein sequences and structures")
     print("#", "-"*78)
     print("#")
@@ -796,7 +796,7 @@ def HMMSAencode(args, pdb_list):
     for pdb_path in pdb_list:
         pdb_file = os.path.basename(pdb_path)
         pdb_code = pdb_file.split(".")[0]
-        print("[Encode]", pdb_code)
+        print("[Encode]", pdb_code, end=' ')
         pdb = PDB6.PDB(pdb_path, hetSkip=1)
         geo = pdb.HMMGeo(pdb_path)
         try:
@@ -1163,11 +1163,11 @@ def adiff(a, b):
     print('[ERROR] PDB list and alignement file length mismatch')
     diff1 = diff(a, b)
     if diff1:
-        print('Fasta file')
-        print(' '.join(diff1))
+        print('Fasta file', end=' ')
+        print(' '.join(diff1), end=' ')
     diff2 = diff(b, a)
     if diff2:
-        print('PDB list')
+        print('PDB list', end=' ')
         print(' '.join(diff2))
     sys.exit()
 
@@ -1247,7 +1247,7 @@ def check_alignement_input(pdb_list, args):
     pdb_db = os.path.join(args.output, "PDB")
     sizes = {}
     for pdb_id in pdbs:
-        print('[CHECK] aligment input', pdb_id)
+        print('[CHECK] aligment input', pdb_id, end=' ')
         sizes[pdb_id] = len(pdbs[pdb_id]['align'])
         pdb, ch = pdb_id.split("_")
         if os.path.isfile(os.path.join(pdb_db, pdb_id+".pdb")):
@@ -1261,7 +1261,7 @@ def check_alignement_input(pdb_list, args):
         pdb_obj = PDB.PDB(pdb_path)
         seq = ''.join(pdb_obj.prot.sequence(chain=ch))
         if seq == pdbs[pdb_id]['seq']:
-            print('sequence OK.')
+            print('sequence OK.', end=' ')
         else:
             print('[ERROR] sequence mismatch', pdb_id)
             check_seq(seq, pdbs[pdb_id]['seq'])
