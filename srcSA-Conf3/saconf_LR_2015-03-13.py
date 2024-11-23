@@ -1028,8 +1028,8 @@ def convertAA_POS_SL(seqaa,NumRes,PosVect, LSVect):
             alignSL_vect.append("-")
 
 
-    alignSL = str.join(alignSL_vect,"")
-    alignPos = str.join(alignPos_vect,".")
+    alignSL = "".join(alignSL_vect)
+    alignPos = ".".join(alignPos_vect)
     return(alignPos, alignSL)
 
 
