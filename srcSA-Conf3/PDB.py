@@ -159,9 +159,9 @@ def fetch_pdb(pdb_id, path="./"):
                 time.sleep(randint(5, 10)/10.0)
             else:
                 break
-    if content and not re.findall("requested file is not available", content):
-        pdb_file = open(os.path.join(path,pdb_id+".pdb"), "w+")
-        pdb_file.write(content)
+    if content and not re.findall("requested file is not available", content.decode('utf-8')):
+        pdb_file = open(os.path.join(path, pdb_id+".pdb"), "w+", encoding="utf-8")
+        pdb_file.write(content.decode('utf-8'))
         pdb_file.close()
         return os.path.join(path, pdb_id+".pdb")
     return None
@@ -360,7 +360,7 @@ class Chain(object):
         for het in self.hetatm:
             atom = Atom(het)
             uid = atom.resid+str(atom.resnum)
-            if not hetatm.has_key(uid):
+            if uid not in hetatm:
                 hetatm[uid] = [het]
             else:
                 hetatm[uid].append(het)
@@ -378,7 +378,7 @@ class Chain(object):
                 atom = Atom(line)
                 if len(atom.resid) == 3:
                     key = atom.resid+str(atom.resnum)+atom.code
-                    if res.has_key(key):
+                    if key in res:
                         res[key].append(line)
                     else:
                         res[key] = [line]
@@ -505,7 +505,7 @@ class Protein(object):
                 for het in self.__pdb_content[ch]['hetatm']:
                     atom = Atom(het)
                     uid = atom.resid+'-'+str(atom.resnum)+'-'+ch
-                    if not ligands.has_key(uid):
+                    if uid not in ligands:
                         ligands[uid] = [het]
                     else:
                         ligands[uid].append(het)
@@ -887,7 +887,7 @@ class PDB(object):
             return line
         begin = False
         with open(self.path) as pdbfile:
-            for line in pdbfile.xreadlines():
+            for line in pdbfile.readlines():
                 line = line.replace('\n', '')
                 if not begin:
                     self.header.append(line)

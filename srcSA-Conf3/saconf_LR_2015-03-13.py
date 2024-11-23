@@ -24,6 +24,7 @@ import string
 import argparse
 import platform
 import shutil
+from shutil import which as find_executable
 
 import PDB
 import PDB6
@@ -32,7 +33,7 @@ from Bio import SeqIO
 from Bio import ExPASy
 from Bio import SwissProt
 from shutil import copy2, rmtree
-from distutils.spawn import find_executable
+from shutil import which as find_executable
 from Bio.Align.Applications import TCoffeeCommandline
 from Bio.Align.Applications import ClustalwCommandline
 
@@ -209,7 +210,7 @@ def get_pdb(pdb_id, pdb_chain, pdb_path, output, fileout):
                 copy2(src, os.path.join(output, pdb_id+"_"+pdb_chain+".pdb"))
                 out = os.path.join(output, pdb_id+"_"+pdb_chain+".pdb")
                 toto= get_pdb_info(out)
-                fileout.write(string.join([pdb_id]+ get_pdb_info(out),";")+"\n")##06/03/15-LR : extract pdb information
+                fileout.write(";".join([pdb_id] + get_pdb_info(out)) + "\n")##06/03/15-LR : extract pdb information
                 extract_chain = False
                 exist = True
         if not pdb_chain or not exist:
@@ -217,15 +218,15 @@ def get_pdb(pdb_id, pdb_chain, pdb_path, output, fileout):
             if os.path.isfile(src):
                 copy2(src, os.path.join(output, pdb_id+".pdb"))
                 out = os.path.join(output, pdb_id+".pdb")
-                fileout.write(string.join([pdb_id]+ get_pdb_info(out),";")+"\n")##06/03/15-LR : extract pdb information
+                fileout.write(";".join([pdb_id]+ get_pdb_info(out))+"\n")##06/03/15-LR : extract pdb information
     if not pdb_path or not out:
         out = PDB.fetch_pdb(pdb_id, output)
         if out != None :
-            fileout.write(string.join([pdb_id]+ get_pdb_info(out),";")+"\n")##06/03/15-LR : extract pdb information
+            fileout.write(";".join([pdb_id]+ get_pdb_info(out))+"\n")##06/03/15-LR : extract pdb information
     if out and extract_chain:
         if pdb_chain:
             pdb_obj = PDB.PDB(out)
-            #fileout.write(string.join([pdb_id]+ get_pdb_info(out),";")+"\n")##06/03/15-LR : extract pdb information
+            #fileout.write(str.join([pdb_id]+ get_pdb_info(out),";")+"\n")##06/03/15-LR : extract pdb information
             out_ch = pdb_obj.prot.export_chain(
                 ch=pdb_chain, path=output
                 #,water=False, hetatm=False,
@@ -267,25 +268,25 @@ def get_pdb_info(pdb):
         for ch in list(listch[0]):
             AAseq = pdb_obj.chn(ch).aaseq() 
             listch_taille.append(ch+":"+str(len(AAseq)))
-        info.append(string.join(listch_taille,"/"))
+        info.append("/".join(listch_taille))
     else:
         info.append("0")
         info.append("NA")
     ###determine si il y a des HETATM
-    hetListU,occHetList = pdb_obj.get_HETATM()
+    hetListU, occHetList = pdb_obj.get_HETATM()
     if len(hetListU) == 0:
          info.append("NA")
     else:
          phr_list = []
          for het_i in range(len(hetListU)):
              phr_list.append(hetListU[het_i]+":"+str(occHetList[het_i]))
-         info.append(string.join(phr_list,"/"))
+         info.append("/".join(phr_list))
     ###determine le code uniprot
     UNPList = pdb_obj.get_UniProtId()
     if len(UNPList) == 0:
         info.append("NA")
     else:
-         info.append(string.join(UNPList,"/"))
+         info.append("/".join(UNPList))
         
     
     return(info)
@@ -366,13 +367,13 @@ def get_pdb_list(pdb_file, pdb_path, output):
     ###preparation du fichier de sortie dataset_composition.csv
     fileout = open(os.path.join(output,COMPO_DATASET),"a")   ##06/03/15 : add LR
     entete = ["pdb_id","experimental method","resolution","number of models","nbr of chain","chain:length","HETATM:Occ","chn:UniProtId:pos"] ##06/03/15-LR :
-    fileout.write(string.join(entete,";")+"\n")   ##06/03/15-LR : extract pdb information
+    fileout.write(";".join(entete) + "\n")   ##06/03/15-LR : extract pdb information
     
     pdb_list = []
     output2 = os.path.join(output, "PDB")
     os.mkdir(output2)
     with open(pdb_file) as pdbs:
-         for pdb in pdbs.xreadlines():
+         for pdb in pdbs.readlines():
 #        for ligne in pdbs.xreadlines():   #add by LR
 #            liste = ligne.split()         #add by LR
 #            pdb = liste[0]                #add by LR
@@ -588,7 +589,7 @@ def supp_Unirot_Seq(output, output2):
         if len(liste) != 2:
             fileout.write(ligne)
         else:
-          if ligne == string.join([" "]*76,"")+'\n':
+          if ligne == "".join([" "]*76)+'\n':
             fileout.write(ligne)
           else:
             id_prot = ligne.split()[0]
@@ -632,7 +633,7 @@ def supp_gap_align(args):
     pos_uniProt_conserv = []
 
     taille_seq = len(list_seq[0])
-    motif_ref = string.join(["-"]*len(list_seq),"")
+    motif_ref = "".join(["-"]*len(list_seq))
     for pos in range((taille_seq-1)):
         tmp = ""
         for seq in list_seq:
@@ -667,7 +668,7 @@ def supp_gap_align(args):
 def corresp_pos_ali_Swss(args, listeUniProt, liste_Seq_uniProt, pos_uniProt_conserv):
     file_out = open(os.path.join(args.output, CORRES_SWSS_ALI),"w")
 
-    file_out.write(string.join(["Aligned"]+listeUniProt,sep=",")+"\n")
+    file_out.write(",".join(["Aligned"]+listeUniProt)+"\n")
 
     list_Num_Swss = []
     #creation des numero de positions
@@ -679,7 +680,7 @@ def corresp_pos_ali_Swss(args, listeUniProt, liste_Seq_uniProt, pos_uniProt_cons
         tmp = [str(i+1)]
         for seq_num in list_Num_Swss : 
             tmp.append( str(seq_num[pos]))
-        file_out.write(string.join(tmp,sep=",")+"\n")
+        file_out.write(",".join(tmp)+"\n")
 
     file_out.close()
 
@@ -726,9 +727,9 @@ def encode_file_to_seq(pdb_code, encode_path, args):
                     file_aa.write(entete)
                     file_sl.write(entete)
                     file_pos.write(entete)
-                    file_aa.write(string.join(list_aa, "")+"\n")
-                    file_sl.write(string.join(list_sl, "")+"\n")
-                    file_pos.write(string.join(list_pos, ".")+"\n")
+                    file_aa.write(str.join(list_aa, "")+"\n")
+                    file_sl.write(str.join(list_sl, "")+"\n")
+                    file_pos.write(str.join(list_pos, ".")+"\n")
     file_aa.close()
     file_sl.close()
     file_pos.close()
@@ -796,14 +797,13 @@ def HMMSAencode(args, pdb_list):
     for pdb_path in pdb_list:
         pdb_file = os.path.basename(pdb_path)
         pdb_code = pdb_file.split(".")[0]
-        print("[Encode]", pdb_code, end=' ')
-        pdb = PDB6.PDB(pdb_path, hetSkip=1)
-        geo = pdb.HMMGeo(pdb_path)
+        print("[Encode]", pdb_code)
         try:
+            pdb = PDB6.PDB(pdb_path, hetSkip=1)
+            geo = pdb.HMMGeo(pdb_path)
             encode = pdb.HMMEncode(theId=pdb_path, BINPATH=GBINPATH, HMMPATH=GHMMPATH)
             seq = pdb.HMMSeq(pdb_path)
             ca = pdb.HMMxyz(pdb_path)
-            #print ca
             index = pdb.HMMrNum(pdb_path)
             encode_nfo = open(os.path.join(output, pdb_code+".info"), "w")
             frag = 0
@@ -818,7 +818,7 @@ def HMMSAencode(args, pdb_list):
                 temp_encodage = '--'
                 try:
                     temp_encodage = temp_encodage+encode[frag][1]
-                except:
+                except IndexError:
                     print('empty case')
                 temp_encodage = temp_encodage + '-'
                 if len(temp_fasta) < 4 or (len(temp_fasta) >= 4 and len(temp_fasta) == len(temp_encodage)):
@@ -829,11 +829,10 @@ def HMMSAencode(args, pdb_list):
                         try:
                             encode_nfo.write("%5s " % temp_index[i-1])
                             # decalage de -1 car index n'intere pas le nom du fragment
-                        except:
+                        except IndexError:
                             print('empty case in all info')
                         encode_nfo.write(
-                            "%s %s %s %s %s\n"
-                            % (temp_ca[i][0:8], temp_ca[i][8:16], temp_ca[i][16:], temp_fasta[i-1], temp_encodage[i-1])
+                            f"{temp_ca[i][0:8]} {temp_ca[i][8:16]} {temp_ca[i][16:]} {temp_fasta[i-1]} {temp_encodage[i-1]}\n"
                         )
                         i += 1
                 else:
@@ -841,8 +840,8 @@ def HMMSAencode(args, pdb_list):
                 frag += 1
             encode_nfo.close()
             encode_file_to_seq(pdb_code, os.path.join(output, pdb_code+".info"), args)
-        except:
-             print("erreur dans l'encodage")
+        except Exception as e:
+            print(f"erreur dans l'encodage: {e}")
 
 
 ##LR: comment this function- this function must be removed
@@ -973,7 +972,7 @@ def HmmfileParse(HMMfile,ch):
 #        idx += 1
 #        BS = ExtractPOS(idx,vectRes , vectpos)
 #        newseq.append(BS)
-#    newseq2 = string.join(newseq,".")
+#    newseq2 = str.join(newseq,".")
 #    return newseq2
 
 
@@ -1029,8 +1028,8 @@ def convertAA_POS_SL(seqaa,NumRes,PosVect, LSVect):
             alignSL_vect.append("-")
 
 
-    alignSL = string.join(alignSL_vect,"")
-    alignPos = string.join(alignPos_vect,".")
+    alignSL = str.join(alignSL_vect,"")
+    alignPos = str.join(alignPos_vect,".")
     return(alignPos, alignSL)
 
 
@@ -1068,7 +1067,7 @@ def align_sl_seq(args):
             else:
                 print("[ERROR] path not found")
             #print pdbFile_nm, ch
-            if os.path.isfile(pdbFile_nm) :
+            if os.path.isfile(pdbFile_nm):
                 ###transfo le pdbFile en objet PDB
                 pdb_obj = PDB6.PDB(pdbFile_nm)
                 ###extraction du pdb de la chain
@@ -1457,35 +1456,35 @@ def gen_pml(args):
     
     #visualization of the mutated aligned positions
     if len(posAA)!= 0:    ## LR: add
-        file_out.write("select mut, chain "+ ch + " and resid " + string.join(posAA,"+") +" \n")
+        file_out.write("select mut, chain "+ ch + " and resid " + str.join(posAA,"+") +" \n")
         file_out.write("show sticks, mut\n")                  ##LR: modify lines by sticks
         #file_out.write("color red, mut\n")                   ##LR: comment
 
     #visualization of the structurally conserved aligned positions
     if len(posSLc)!= 0:    ## LR: add
-        file_out.write("select consPos, chain "+ ch + " and  resid " + string.join(posSLc,"+") + " \n")
+        file_out.write("select consPos, chain "+ ch + " and  resid " + str.join(posSLc,"+") + " \n")
         file_out.write("color magenta, consPos\n")
 
     #visualization of the structurally variable aligned positions without SS changes
     if len(posSLv_noSS)!= 0:    ## LR: add
-        file_out.write("select varPos_NoSS, chain "+ ch + " and  resid " + string.join(posSLv_noSS,"+") + " \n")
+        file_out.write("select varPos_NoSS, chain "+ ch + " and  resid " + str.join(posSLv_noSS,"+") + " \n")
         file_out.write("color slate, varPos_NoSS\n")
 
     #visualization of the structurally variable aligned positions with SS changes
     if len(posSLv_withSS)!= 0:    ## LR: add
-        file_out.write("select varPos_withSS, chain "+ ch + " and  resid " + string.join(posSLv_withSS,"+") + " \n")
+        file_out.write("select varPos_withSS, chain "+ ch + " and  resid " + str.join(posSLv_withSS,"+") + " \n")
         file_out.write("color blue, varPos_withSS\n")
 
 
     #visualization of the weak structurally variable aligned positions
     #if len(posSLwv)!= 0:    ## LR: add
-    #    file_out.write("select WeakvarPos, chain "+ ch + " and  resid " + string.join(posSLwv,"+") + " \n")
+    #    file_out.write("select WeakvarPos, chain "+ ch + " and  resid " + str.join(posSLwv,"+") + " \n")
     #    file_out.write("color slate, WeakvarPos\n")
 
 
     #visualization of the strongly structurally variable aligned positions
     #if len(posSL)!= 0:    ## LR: add
-    #    file_out.write("select varPos, chain "+ ch + " and  resid " + string.join(posSL,"+") + " \n")
+    #    file_out.write("select varPos, chain "+ ch + " and  resid " + str.join(posSL,"+") + " \n")
     #    file_out.write("color blue, varPos\n")
 
 

@@ -177,35 +177,35 @@ def gen_pml(args):
     
     #visualization of the mutated aligned positions
     if len(posAA)!= 0:    ## LR: add
-        file_out.write("select mut, chain "+ ch + " and resid " + string.join(posAA,"+") +" \n")
+        file_out.write("select mut, chain "+ ch + " and resid " + str.join(posAA,"+") +" \n")
         file_out.write("show sticks, mut\n")                  ##LR: modify lines by sticks
         #file_out.write("color red, mut\n")                   ##LR: comment
 
     #visualization of the structurally conserved aligned positions
     if len(posSLc)!= 0:    ## LR: add
-        file_out.write("select consPos, chain "+ ch + " and  resid " + string.join(posSLc,"+") + " \n")
+        file_out.write("select consPos, chain "+ ch + " and  resid " + str.join(posSLc,"+") + " \n")
         file_out.write("color green, consPos\n")
 
     #visualization of the structurally variable aligned positions without SS changes
     if len(posSLv_noSS)!= 0:    ## LR: add
-        file_out.write("select varPos_NoSS, chain "+ ch + " and  resid " + string.join(posSLv_noSS,"+") + " \n")
+        file_out.write("select varPos_NoSS, chain "+ ch + " and  resid " + str.join(posSLv_noSS,"+") + " \n")
         file_out.write("color slate, varPos_NoSS\n")
 
     #visualization of the structurally variable aligned positions with SS changes
     if len(posSLv_withSS)!= 0:    ## LR: add
-        file_out.write("select varPos_withSS, chain "+ ch + " and  resid " + string.join(posSLv_withSS,"+") + " \n")
+        file_out.write("select varPos_withSS, chain "+ ch + " and  resid " + str.join(posSLv_withSS,"+") + " \n")
         file_out.write("color blue, varPos_withSS\n")
 
 
     #visualization of the weak structurally variable aligned positions
     #if len(posSLwv)!= 0:    ## LR: add
-    #    file_out.write("select WeakvarPos, chain "+ ch + " and  resid " + string.join(posSLwv,"+") + " \n")
+    #    file_out.write("select WeakvarPos, chain "+ ch + " and  resid " + str.join(posSLwv,"+") + " \n")
     #    file_out.write("color slate, WeakvarPos\n")
 
 
     #visualization of the strongly structurally variable aligned positions
     #if len(posSL)!= 0:    ## LR: add
-    #    file_out.write("select varPos, chain "+ ch + " and  resid " + string.join(posSL,"+") + " \n")
+    #    file_out.write("select varPos, chain "+ ch + " and  resid " + str.join(posSL,"+") + " \n")
     #    file_out.write("color blue, varPos\n")
 
 
