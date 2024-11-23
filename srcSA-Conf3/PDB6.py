@@ -153,7 +153,7 @@ def aln2mask(s1,s2):
 	return res
 
 # 
-# implement python 2's apply function
+# Recreate python 2's apply function
 #
 def apply(func, args, kwargs=None):
     return func(*args) if kwargs is None else func(*args, **kwargs)
@@ -839,9 +839,12 @@ class residue(atmList):
 ## The PDB file parser
 ## p.chn("A") does not work !!
 ## ========================================
-class PDB(PDBLine,residue):
+class PDB:
 
 	def __init__(self, fname = "", chId = "", model = 1, hetSkip = 0, verbose = 0):
+		self.pdb_line = PDBLine()
+		self.residue = residue()
+  		
 		if fname != "":
 			if fname == None:
 				return None
