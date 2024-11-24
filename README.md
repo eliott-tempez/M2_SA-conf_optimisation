@@ -8,8 +8,6 @@ Protein flexibility is often implied in binding with different partners and is e
 
 The aim of this project is to implement new features in SA-conf, so that it allows for a more in-depth analysis. 
 
-<small>**(1)** Regad, L.; Chéron, J.-B.; Triki, D.; Senac, C.; Flatters, D.; Camproux, A.-C. Exploring the Potential of a Structural Alphabet-Based Tool for Mining Multiple Target Conformations and Target Flexibility Insight. *PLOS ONE* 2017, 12 (8), e0182972. https://doi.org/10.1371/journal.pone.0182972.</small>
-
 
 ### Installation
 * First, clone the repository from GitHub:
@@ -32,3 +30,16 @@ conda activate SA-conf
 ```
 
 * You can now use the program. The guidelines are available in the saconf-tutorial pdf.
+
+
+### New additions (full report : report.pdf)
+The new additions include:
+- Switching from Python 2 to Python 3
+- Distinguishing unmodelled residues from absent residues bescause of DNA deletions in the graphs
+- Taking uncertain coordinates into account
+- Taking the B-factor into account with a supplementary graph
+- Classify the proteins according to their encoding
+
+
+### References
+**(1)** Regad, L.; Chéron, J.-B.; Triki, D.; Senac, C.; Flatters, D.; Camproux, A.-C. Exploring the Potential of a Structural Alphabet-Based Tool for Mining Multiple Target Conformations and Target Flexibility Insight. *PLOS ONE* 2017, 12 (8), e0182972. https://doi.org/10.1371/journal.pone.0182972.
