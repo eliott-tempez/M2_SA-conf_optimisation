@@ -34,8 +34,7 @@ from Bio import ExPASy
 from Bio import SwissProt
 from shutil import copy2, rmtree
 from shutil import which as find_executable
-from Bio.Align.Applications import TCoffeeCommandline
-from Bio.Align.Applications import ClustalwCommandline
+import subprocess
 
 
 #pathsrcDesc ="/home/leslieregad/Dropbox/Projet/uroTest/sa-conf-beta/"
@@ -523,11 +522,15 @@ def align_aa_seq(args):
 
     if args.method == "clustalw":
         #align = ClustalwCommandline(os.path.join(PATH,"src/clustalw2"), infile=fasta_file, outfile = output)
-        align = ClustalwCommandline("clustalw", infile=fasta_file, outfile = output)
-        stdout, stderr = align()
+        cmd = ["clustalw", "-INFILE=" + fasta_file, "-OUTFILE=" + output]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        stdout = result.stdout
+        stderr = result.stderr
     elif args.method == "tcoffee":
-        align = TCoffeeCommandline("t_coffee", infile=fasta_file, outfile = output)
-        stdout, stderr = align()
+        cmd = ["t_coffee", "-infile=" + fasta_file, "-outfile=" + output]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        stdout = result.stdout
+        stderr = result.stderr
     #os.remove("seq.dnd")
 
     sequences = SeqIO.parse(output, "clustal")
