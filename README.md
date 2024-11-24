@@ -10,10 +10,10 @@ The aim of this project is to implement new features in SA-conf, so that it allo
 
 
 ### Installation
-* First, clone the repository from GitHub:
+* First, clone the repository from GitHub (only the main branch):
 
 ```
-git clone https://github.com/eliott-tempez/M2_SA-conf_optimisation.git
+git clone --branch main https://github.com/eliott-tempez/M2_SA-conf_optimisation.git
 cd M2_SA-conf_optimisation
 ```
 
