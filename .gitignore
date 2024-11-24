@@ -1,5 +1,6 @@
 *.pdf
 !saconf-tutorial.pdf
+!report.pdf
 __pycache__/
 saconf_out/
 *.pyc
