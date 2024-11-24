@@ -1192,7 +1192,7 @@ class PDB:
 	#
 	# the molecular type of chain(s) in string chainId
 	#
-	def chnType(self, chainId = "", verbose = 0):
+	def chnType(self, chainId="", verbose=0):
 		if chainId == "":
 			chainId = self.chnList()
 		res = []
@@ -1914,7 +1914,7 @@ class PDB:
 
 
 # JM je rajoute la possibilite d'utiliser un autre modele
-	def HMMEncode(self, theId="unknwn",MODEL='none', BINPATH=GBINPATH, HMMPATH = GHMMPATH, verbose = 0):
+	def HMMEncode(self, theId="unknwn", MODEL='none', BINPATH=GBINPATH, HMMPATH = GHMMPATH, verbose=0):
 		chList = self.chnList()
 		res = []
 		for chId in chList:
@@ -1925,6 +1925,7 @@ class PDB:
 				print(curChn[0])
 				print(curChn[-1])
 			nFrg, frgList = curChn.frgList()
+			print(nFrg, frgList)
 			if chId == " ":
 				chId = ""
 
@@ -2317,13 +2318,13 @@ class PDB:
 	#
 	# This will not check for fragments
 	#
-	def aaseq(self, verbose = 0):
+	def aaseq(self, verbose=0):
 		res = ""
 		unres = []
 		for aRes in self:
-			if AA3STRICT.count(aRes.rName()):
-				res = res + AA1[AA3STRICT.index(aRes.rName())]
-			elif AA3.count(aRes.rName()):
+			if aRes.rName() in AA3STRICT:
+				res += AA1[AA3STRICT.index(aRes.rName())]
+			elif aRes.rName() in AA3:
 				rName = aRes.rName()
 				if verbose:
 					print("Unfrequent residue type: ", end=' ')
@@ -2348,10 +2349,9 @@ class PDB:
 				else:
 					res = res+'X'
 			else:
-				if unres.count(aRes.rName()) == 0:
+				if aRes.rName() not in unres:
 					unres.append(aRes.rName())
-					print("Unknown residue type (2): ",aRes.rName())
-					print(unres)
+					print("Unknown residue type (2): ", aRes.rName())
 		return res
 
 
@@ -2674,7 +2674,7 @@ class protein(PDB):
 			for aLine in curRes.atms:
 				if aLine[16] != ' ':
 					isAlt = 1
-					if str.count(string.digits,aLine[12]):
+					if any(char.isdigit() for char in aLine[12]):
 						isAlt = 0
 					if aLine[12] == ' ' and aLine[13] == 'H':
 						isAlt = 0

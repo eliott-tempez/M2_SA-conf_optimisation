@@ -364,8 +364,8 @@ def get_pdb_list(pdb_file, pdb_path, output):
     """ get pdb list and dl """
 
     ###preparation du fichier de sortie dataset_composition.csv
-    fileout = open(os.path.join(output,COMPO_DATASET),"a")   ##06/03/15 : add LR
-    entete = ["pdb_id","experimental method","resolution","number of models","nbr of chain","chain:length","HETATM:Occ","chn:UniProtId:pos"] ##06/03/15-LR :
+    fileout = open(os.path.join(output, COMPO_DATASET), "a")   ##06/03/15 : add LR
+    entete = ["pdb_id", "experimental method", "resolution", "number of models", "nbr of chain", "chain:length", "HETATM:Occ", "chn:UniProtId:pos"] ##06/03/15-LR :
     fileout.write(";".join(entete) + "\n")   ##06/03/15-LR : extract pdb information
     
     pdb_list = []
@@ -401,7 +401,7 @@ def get_pdb_list(pdb_file, pdb_path, output):
 def extract_pdb(args):
     ###preparation du fichier de sortie seq.aa
     if args.uniprot:
-        prepa_seq_uniprot(args.uniprot,args.output)
+        prepa_seq_uniprot(args.uniprot, args.output)
 
     pdb_list = get_pdb_list(args.IDfile, args.pdbpath, args.output)
     return pdb_list
@@ -526,11 +526,15 @@ def align_aa_seq(args):
         result = subprocess.run(cmd, capture_output=True, text=True)
         stdout = result.stdout
         stderr = result.stderr
+        if result.returncode != 0:
+            print("Error in ClustalW:", result.stderr)
     elif args.method == "tcoffee":
         cmd = ["t_coffee", "-infile=" + fasta_file, "-outfile=" + output]
         result = subprocess.run(cmd, capture_output=True, text=True)
         stdout = result.stdout
         stderr = result.stderr
+        if result.returncode != 0:
+            print("Error in tCoffee:", result.stderr)
     #os.remove("seq.dnd")
 
     sequences = SeqIO.parse(output, "clustal")
@@ -804,7 +808,7 @@ def HMMSAencode(args, pdb_list):
         try:
             pdb = PDB6.PDB(pdb_path, hetSkip=1)
             geo = pdb.HMMGeo(pdb_path)
-            encode = pdb.HMMEncode(theId=pdb_path, BINPATH=GBINPATH, HMMPATH=GHMMPATH)
+            encode = pdb.HMMEncode(theId=pdb_path, BINPATH=GBINPATH, HMMPATH=GHMMPATH, verbose=True)
             seq = pdb.HMMSeq(pdb_path)
             ca = pdb.HMMxyz(pdb_path)
             index = pdb.HMMrNum(pdb_path)
