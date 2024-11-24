@@ -1,5 +1,6 @@
 ## SA-conf Optimisaiton
 **Eliott TEMPEZ - Université Paris Cité**
+
 **M2 Bioinformatique**
 
 ### Long project - in collaboration with Leslie REGAD
@@ -7,7 +8,7 @@ Protein flexibility is often implied in binding with different partners and is e
 
 The aim of this project is to implement new features in SA-conf, so that it allows for a more in-depth analysis. 
 
-**(1)** Regad, L.; Chéron, J.-B.; Triki, D.; Senac, C.; Flatters, D.; Camproux, A.-C. Exploring the Potential of a Structural Alphabet-Based Tool for Mining Multiple Target Conformations and Target Flexibility Insight. *PLOS ONE* 2017, 12 (8), e0182972. https://doi.org/10.1371/journal.pone.0182972.
+<small>**(1)** Regad, L.; Chéron, J.-B.; Triki, D.; Senac, C.; Flatters, D.; Camproux, A.-C. Exploring the Potential of a Structural Alphabet-Based Tool for Mining Multiple Target Conformations and Target Flexibility Insight. *PLOS ONE* 2017, 12 (8), e0182972. https://doi.org/10.1371/journal.pone.0182972.</small>
 
 
 ### Installation
