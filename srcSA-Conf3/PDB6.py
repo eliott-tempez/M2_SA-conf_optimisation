@@ -1860,6 +1860,9 @@ class PDB:
 			return []
 		dst7 = self.HMMGeo(theId)
 		
+		# make sure the HMMPred file is executable
+		command = "chmod +x " + os.path.join(BINPATH, "HMMPred")
+		subprocess.run(command, shell=True, check=True, text=True, capture_output=True)
 		# ici choix du modle d'encodage
 		if MODEL=='none':
 			cmd = os.path.join(BINPATH, "HMMPred") + " -iMdl " + os.path.join(HMMPATH, "27best-2.model") + " -idst stdin -noconfmat 2> /dev/null"
@@ -1868,18 +1871,30 @@ class PDB:
 		if verbose:
 			print(cmd)
 
-		# popen: do not break prints
-		oristdout = sys.stdout
-		process = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+		# Prepare input for the subprocess
+		input_data = f"{len(dst7)}\n"
 		for i in dst7:
-			process.stdin.write(i + '\n')
-		process.stdin.close()
-		rs = process.stdout.readlines()
-		process.stdout.close()
-		sys.stdout = oristdout
+			input_data += f"{i}\n"
 
-		rs = [line.strip() for line in rs]
+		# Run the subprocess
+		process = subprocess.Popen(
+			cmd,
+			shell=True,
+			stdin=subprocess.PIPE,
+			stdout=subprocess.PIPE,
+			stderr=subprocess.PIPE,
+			text=True
+		)
+
+		stdout, stderr = process.communicate(input=input_data)
+		if process.returncode != 0:
+			sys.stderr.write(f"HMMPred error: {stderr}\n")
+			return []
+
+		# Process the output
+		rs = stdout.splitlines()
 		return rs
+
 
 	def HMMTraceCheck(self, theId="unknwn", BINPATH=GBINPATH, HMMPATH = GHMMPATH, verbose = 0):
 		chList = self.chnList()
@@ -1925,7 +1940,6 @@ class PDB:
 				print(curChn[0])
 				print(curChn[-1])
 			nFrg, frgList = curChn.frgList()
-			print(nFrg, frgList)
 			if chId == " ":
 				chId = ""
 
@@ -1940,7 +1954,7 @@ class PDB:
 					curId = curId+chId
 				if nFrg > 1:
 					curId = curId+"_"+str(curdex)
-				lrs = curChn[i[0]:i[1]+1].HMMfrgEncode(curId,MODEL,BINPATH, HMMPATH, verbose)
+				lrs = curChn[i[0]:i[1]+1].HMMfrgEncode(curId, MODEL, BINPATH, HMMPATH, verbose)
 				res.append(lrs)
 		return res
 

@@ -734,9 +734,9 @@ def encode_file_to_seq(pdb_code, encode_path, args):
                     file_aa.write(entete)
                     file_sl.write(entete)
                     file_pos.write(entete)
-                    file_aa.write(str.join(list_aa, "")+"\n")
-                    file_sl.write(str.join(list_sl, "")+"\n")
-                    file_pos.write(str.join(list_pos, ".")+"\n")
+                    file_aa.write("".join(list_aa)+"\n")
+                    file_sl.write("".join(list_sl)+"\n")
+                    file_pos.write(".".join(list_pos)+"\n")
     file_aa.close()
     file_sl.close()
     file_pos.close()
@@ -808,7 +808,7 @@ def HMMSAencode(args, pdb_list):
         try:
             pdb = PDB6.PDB(pdb_path, hetSkip=1)
             geo = pdb.HMMGeo(pdb_path)
-            encode = pdb.HMMEncode(theId=pdb_path, BINPATH=GBINPATH, HMMPATH=GHMMPATH, verbose=True)
+            encode = pdb.HMMEncode(theId=pdb_path, BINPATH=GBINPATH, HMMPATH=GHMMPATH)
             seq = pdb.HMMSeq(pdb_path)
             ca = pdb.HMMxyz(pdb_path)
             index = pdb.HMMrNum(pdb_path)
@@ -1463,23 +1463,23 @@ def gen_pml(args):
     
     #visualization of the mutated aligned positions
     if len(posAA)!= 0:    ## LR: add
-        file_out.write("select mut, chain "+ ch + " and resid " + str.join(posAA,"+") +" \n")
+        file_out.write("select mut, chain "+ ch + " and resid " + "+".join(posAA) +" \n")
         file_out.write("show sticks, mut\n")                  ##LR: modify lines by sticks
         #file_out.write("color red, mut\n")                   ##LR: comment
 
     #visualization of the structurally conserved aligned positions
     if len(posSLc)!= 0:    ## LR: add
-        file_out.write("select consPos, chain "+ ch + " and  resid " + str.join(posSLc,"+") + " \n")
+        file_out.write("select consPos, chain "+ ch + " and  resid " + "+".join(posSLc) + " \n")
         file_out.write("color magenta, consPos\n")
 
     #visualization of the structurally variable aligned positions without SS changes
     if len(posSLv_noSS)!= 0:    ## LR: add
-        file_out.write("select varPos_NoSS, chain "+ ch + " and  resid " + str.join(posSLv_noSS,"+") + " \n")
+        file_out.write("select varPos_NoSS, chain "+ ch + " and  resid " + "+".join(posSLv_noSS) + " \n")
         file_out.write("color slate, varPos_NoSS\n")
 
     #visualization of the structurally variable aligned positions with SS changes
     if len(posSLv_withSS)!= 0:    ## LR: add
-        file_out.write("select varPos_withSS, chain "+ ch + " and  resid " + str.join(posSLv_withSS,"+") + " \n")
+        file_out.write("select varPos_withSS, chain "+ ch + " and  resid " + "+".join(posSLv_withSS) + " \n")
         file_out.write("color blue, varPos_withSS\n")
 
 
