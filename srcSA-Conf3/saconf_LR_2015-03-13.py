@@ -208,7 +208,7 @@ def get_pdb(pdb_id, pdb_chain, pdb_path, output, fileout):
             if os.path.isfile(src):
                 copy2(src, os.path.join(output, pdb_id+"_"+pdb_chain+".pdb"))
                 out = os.path.join(output, pdb_id+"_"+pdb_chain+".pdb")
-                toto= get_pdb_info(out)
+                toto = get_pdb_info(out)
                 fileout.write(";".join([pdb_id] + get_pdb_info(out)) + "\n")##06/03/15-LR : extract pdb information
                 extract_chain = False
                 exist = True
@@ -242,18 +242,18 @@ def get_pdb_info(pdb):
     pdb_obj = PDB6.PDB(pdb)
     #determination de la method experimentale
     method = pdb_obj.expmethod()
-    if method==None:
-        method="none"
+    if method == None:
+        method = "none"
     #pour les structures cristallo determine la resolution
-    if method=="X-RAY DIFFRACTION":
+    if method == "X-RAY DIFFRACTION":
         reso = str(pdb_obj.resolution())
     else:
         reso = "NA"
     #pour les structures rmn extrait le nombre de modèle
-    if method=="NMR": 
+    if method == "NMR": 
         nbrModel =  str(pdb_obj.nModels()-1)
     else:
-        nbrModel="NA"
+        nbrModel = "NA"
     info = [method, reso,nbrModel]
     ###determination of the number of chain
     #allch = pdb_obj.chnList().split()

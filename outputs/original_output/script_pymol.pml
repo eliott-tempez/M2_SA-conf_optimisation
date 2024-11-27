@@ -1,20 +1,22 @@
-load ./saconf_out/PDB/1HSI.pdb, 1HSI 
-color grey, 1HSI
-select protch, chain a, 1HSI
+load ./saconf_out/PDB/1HHP.pdb, 1HHP 
+color grey, 1HHP
+select protch, chain a, 1HHP
 color cyan, protch
 hide line
-show cartoon, 1HSI
+show cartoon, 1HHP
 show surface, protch
 remove resname hoh
 set transparency, 0.3
 select ligand, het 
 show sticks, ligand
 util.cbay("ligand")
-select consPos, chain a and  resid 7+8+9+10+11+12+17+19+20+24+25+26+27+28+29+30+33+35+41+45+53+56+58+61+67+68+71+72+73+74+76+81+82+84+85+87+88+89+90+94+95+97 
+select mut, chain a and resid 3+4+7+9+10+11+12+13+14+15+16+17+19+20+22+31+32+33+34+35+36+37+39+40+41+42+43+46+47+55+56+57+58+60+61+62+63+66+67+68+69+71+72+73+75+76+77+79+82+85+89+92+93+95+96+99 
+show sticks, mut
+select consPos, chain a and  resid 7+28+30+68+82+84 
 color magenta, consPos
-select varPos_NoSS, chain a and  resid 3+5+6+13+14+16+18+22+23+32+34+36+38+39+40+42+43+46+47+48+49+50+51+52+54+57+59+60+62+64+65+66+69+70+75+77+79+86+91+92+93+96+98 
+select varPos_NoSS, chain a and  resid 6+18+32+35+40+41+43+46+50+51+64+67+69+70+75+77+79+87+89+96 
 color slate, varPos_NoSS
-select varPos_withSS, chain a and  resid 4+15+21+31+37+44+55+63+78+80+83 
+select varPos_withSS, chain a and  resid 3+4+5+10+13+14+15+16+21+22+23+24+25+31+34+36+37+38+39+42+44+47+48+49+54+57+58+59+60+62+63+66+72+73+74+78+80+83+86+90+91+92+93+95+97+98 
 color blue, varPos_withSS
 bg_colour white 
 set surface_quality, 2 
