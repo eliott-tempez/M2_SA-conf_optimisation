@@ -1580,7 +1580,7 @@ def moveProgR(args):
     if os.path.isfile(os.path.join(args.output, POS_ALIGN_FILE)):
         os.rename(os.path.join(args.output, POS_ALIGN_FILE), os.path.join(path_Rfiles, POS_ALIGN_FILE))
         
-    if os.pathisfile(os.path.join(args.output, "res_info.csv")):
+    if os.path.isfile(os.path.join(args.output, "res_info.csv")):
         os.rename(os.path.join(args.output, "res_info.csv"), os.path.join(path_Rfiles, "res_info.csv"))
 
 
@@ -1615,13 +1615,14 @@ if __name__ == "__main__":
 
     print("- HMM-SA ENCODING")
     HMMSAencode(args, pdb_list)
-    extractMissingRSRZ(args, pdb_list)
+    
 
     if not args.alignFile:
         print("- ALIGN")
         align_aa_seq(args)
     else:
         check_alignement_input(pdb_list, args)
+    extractMissingRSRZ(args, pdb_list)
 
 
     print("- SL ALIGNMENT")
