@@ -1579,6 +1579,9 @@ def moveProgR(args):
         
     if os.path.isfile(os.path.join(args.output, POS_ALIGN_FILE)):
         os.rename(os.path.join(args.output, POS_ALIGN_FILE), os.path.join(path_Rfiles, POS_ALIGN_FILE))
+        
+    if os.pathisfile(os.path.join(args.output, "res_info.csv")):
+        os.rename(os.path.join(args.output, "res_info.csv"), os.path.join(path_Rfiles, "res_info.csv"))
 
 
 #-------------------------------------------------------------------------------
