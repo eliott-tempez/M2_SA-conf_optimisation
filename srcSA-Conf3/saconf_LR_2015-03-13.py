@@ -798,7 +798,7 @@ def encode_file_to_seq(pdb_code, encode_path, args):
 #        encode_file_to_seq(pdb_code, os.path.join(output, pdb_code+".info"), args)
 
 
-def HMMSAencode(args, pdb_list):
+def HMMSAencode(args, pdb_list):    
     output = os.path.join(args.output, "HMM-SA")
     os.mkdir(output)
     for pdb_path in pdb_list:
@@ -1404,6 +1404,25 @@ def def_important_pos(file_param, vect_pos) :
    return(listPos)
 
 
+def extractMissingRSRZ(args, pdb_list):
+    """Create a file that contains info for each residue (missing/RSRZ)"""
+    fname_indiv = os.path.join(args.output, "res_info.csv")
+    with open (fname_indiv, "w") as file_indiv:
+        file_indiv.write("pdb,chain,resnum,resname,missing\n")
+        for pdb_path in pdb_list:
+            pdb_file = os.path.basename(pdb_path)
+            pdb_code = pdb_file.split(".")[0]
+            pdb = PDB6.PDB(pdb_path, hetSkip=1)
+            res_dict = pdb.getAllRes()
+            for chain in res_dict:
+                for res in res_dict[chain]:
+                    resnum = res[0]
+                    resname = res[1]
+                    missing = int(res[2] == "missing")
+                    file_indiv.write(f"{pdb_code},{chain},{resnum},{resname},{missing}\n")
+        
+    
+
 
 
 def gen_pml(args):
@@ -1593,6 +1612,7 @@ if __name__ == "__main__":
 
     print("- HMM-SA ENCODING")
     HMMSAencode(args, pdb_list)
+    extractMissingRSRZ(args, pdb_list)
 
     if not args.alignFile:
         print("- ALIGN")

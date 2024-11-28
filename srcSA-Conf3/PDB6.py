@@ -1543,6 +1543,36 @@ class PDB:
 
 		return R_VALUE
 
+	# Missing residues
+	def missingRes(self):
+		misRes = {}
+
+		# Get chunk with info
+		for i in range(len(self.info)):
+			has_missing = False
+			if self.info[i].startswith('REMARK 465   M RES C SSSEQI'):
+				has_missing = True
+				startPos = i + 1
+				break
+		while self.info[i].startswith('REMARK 465'):
+			i += 1
+		endPos = i
+
+		# Get missing residues
+		if has_missing:
+			for i in range(startPos, endPos):
+				line_split = self.info[i].strip().split()
+				res3 = line_split[2]
+				res1 = SEQREStoAA1(res3)
+				chain = line_split[3]
+				resNum = line_split[4]
+				if chain not in misRes:
+					misRes[chain] = []
+				misRes[chain].append([int(resNum), res1])
+
+		return misRes			
+		
+
 	def freervalue(self):
 
 		FREE_R_VALUE   = "NULL"
@@ -2428,8 +2458,51 @@ class PDB:
 					x1,y1,z1 = self[aPos].atms[aAtm].xyz()
 					if distance(x,y,z,x1,y1,z1) < 2.35:
 						return 1, aPos, distance(x,y,z,x1,y1,z1)
-		return 0,0,0	
-	
+		return 0,0,0
+
+
+	def getAllRes(self):
+		res = {}
+     
+		# Extract indexes
+		index_raw = self.HMMrNum()
+		index = []
+		sublist = []
+		for i in range(len(index_raw)-1):
+			sublist += [int(val) for val in index_raw[i]]
+			if int(index_raw[i][-1]) >= int(index_raw[i+1][0]):
+				index.append(sublist)
+				sublist = []
+		# Extract sequences and give them the same shape as the indexes
+		seq = []
+		seq_raw = self.aaseq()
+		i = 0
+		for sublist in index:
+			length = len(sublist)
+			segment = list(seq_raw[i:i+length])
+			seq.append(segment)
+			i += length
+		# Create dict for each resolved residue
+		solved_dict = {}
+		possible_keys = list(string.ascii_uppercase) + list(string.ascii_lowercase)
+		for i in range(len(index)):
+			solved_dict[possible_keys[i]] = [[int(index[i][j]), seq[i][j]] for j in range(len(index[i]))]
+		# Extract dict of missing residues
+		missing_dict = self.missingRes()
+  
+		# Merge the dictionaries
+		for key in set(solved_dict.keys()).union(missing_dict.keys()):
+			solved_list = solved_dict.get(key, [])
+			missing_list = missing_dict.get(key, [])
+			solved_entries = [entry + ['solved'] for entry in solved_list]
+			missing_entries = [entry + ['missing'] for entry in missing_list]
+			# Combine the lists and sort by the first element (index)
+			res[key] = sorted(solved_entries + missing_entries, key=lambda x: x[0])
+  
+		return dict(sorted(res.items()))
+        
+
+
 
 ## ========================================
 ## Protein specific tools
