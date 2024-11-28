@@ -56,9 +56,8 @@ names(VectcolAA) =  AlphabetAA[2:length(AlphabetAA)]
 #SL
 Alphabet=c("-","a","A","V","W","Z","B","C","D","E","O","S","R","Q","I","F","U","P","H","G","Y","J","K",
            "L","N","M","T","X")
-VectcolSL=c("#FF0000FF", "#FF3900FF", "#FF7100FF" ,"#FFAA00FF", "#FFE300FF" , "#FF0071FF","#FF0039FF" ,"#FF00AAFF" ,   "#FF00E3FF" , "#E300FFFF", "#AA00FFFF", "#7100FFFF", "#3900FFFF", "#0000FFFF", "#0039FFFF" , "#0071FFFF","#00AAFFFF","#00E3FFFF" ,"#00FFE3FF", "#00FFAAFF","#00FF71FF", "#00FF39FF","#39FF00FF","#00FF00FF" ,"#71FF00FF", "#AAFF00FF","#E3FF00FF" )
-VectcolSL=c("red4","red","indianred3", "tomato2","orange","yellow","yellow3","seashell2","mistyrose1","pink","violet","pink3","purple","purple4","lavenderblush4","blue","steelblue","cyan","paleturquoise","powderblue","palegoldenrod",'bisque4',"darkcyan","green","yellowgreen","olivedrab4","khaki4")
-names(VectcolSL) =  Alphabet[2:length(Alphabet)]  
+VectcolSL=c("black", "red4","red","indianred3", "tomato2","orange","yellow","yellow3","seashell2","mistyrose1","pink","violet","pink3","purple","purple4","lavenderblush4","blue","steelblue","cyan","paleturquoise","powderblue","palegoldenrod",'bisque4',"darkcyan","green","yellowgreen","olivedrab4","khaki4")
+names(VectcolSL) =  Alphabet[1:length(Alphabet)]  
 
 
 #-------------------------------------------------------------------------------
@@ -68,7 +67,7 @@ names(VectcolSL) =  Alphabet[2:length(Alphabet)]
 
 f1 = function(vect){
    v1 = table(vect)
-   v2 = length(which(names(v1)!="NA"))
+   v2 = length(which(names(v1)!="NA" & names(v1)!="-"))
    return(v2)
 }
 
@@ -139,6 +138,7 @@ f.defColSS = function(mm){
 
 
 computNeq = function(mat){
+    mat[mat == "-"] <- NA
     neqVect = NULL
     for ( i in 1:dim(mat)[2]){
         vect = mat[which(mat[,i]!="NA"),i]
@@ -485,7 +485,8 @@ for (i in 1:dim(LS)[1]){
 
 for (i in 1:dim(matLS)[1]){
    indSel = which(matLS[i,]=="-")
-   matLS[i, indSel] = "NA"
+   delet = which(matAA[i, indSel]=="NA")
+   matLS[i, delet] = "NA"
 }
 
 
@@ -495,17 +496,18 @@ nbrLSbyPos = apply(matLS, 2, f1)
 nbrLSbyPosbySS = apply(matLS, 2, f2)
 
 #-----------------------------------------
-# Step 4 : LS maxtrix
+# Step 4 : LS matrix
 # evolution of the number of LS by position
 #-----------------------------------------
 
 Mat3 = matrix(NA, ncol = ncol(matLS), nrow= nrow(matLS))
 
-for (Ibs in 2:length(Alphabet)){
+for (Ibs in 1:length(Alphabet)){
     bs=Alphabet[Ibs]
     Mat3[which(matLS==bs)]=as.numeric(Ibs)
 }
 rownames(Mat3) = Listpdb
+Mat3[, c(1, 2, ncol(Mat3))] = NA
 
 #-----------------------------------------
 # Calcul le NeqSL
@@ -524,7 +526,7 @@ neqLSVect2[which(neqLSVect==0)]=NA
 pdf(file.SLalign,width=11,height=8)
 par(mar = c(2, 1.8,1 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
 nf <- layout(matrix(1:4,2,2,byrow=TRUE), c(22,6, 22, 6), c(22,5.5,22,5.5), TRUE)
-image(t(Mat3)[,nrow(Mat3):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="", br=1:28)
+image(t(Mat3)[,nrow(Mat3):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="",br=0:28)
       #breaks=seq(min(Mat3,na.rm=T),(max(Mat3,na.rm=T)+1))
 axis(2,seq(1,0,length=dim(Mat3)[1]),rownames(Mat3),cex.axis=0.7,las=1)
 axis(1,seq(0,(dim(Mat3)[2]-1), by=10)/dim(Mat3)[2],seq(1,dim(Mat3)[2], by=10),cex.axis=0.6,las=1)
@@ -532,9 +534,9 @@ axis(1,seq(0,(dim(Mat3)[2]-1), by=10)/dim(Mat3)[2],seq(1,dim(Mat3)[2], by=10),ce
 
 box()
 #numero=as.numeric(names(table(Mat3)))
-numero = 2:28
+numero = 1:28
 plot(rep(0,length=length(numero)),numero,type="n",axes=F,ylab="",xlab="")
-text(rep(0,length=length(numero)),numero,label=Alphabet[numero],col=VectcolSL)	
+text(rep(0,length=length(numero)),numero,label=c("unmapped", Alphabet[numero[2:28]]),col=VectcolSL)	
 
 image(as.matrix(neqLSVect2), axes=FALSE, col = c("magenta", "cyan", "blue"), breaks=c(0,1,1.5, max(neqLSVect)+1))
 box()
