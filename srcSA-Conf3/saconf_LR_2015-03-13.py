@@ -24,6 +24,8 @@ import string
 import argparse
 import platform
 import shutil
+import urllib.request
+import gzip
 from shutil import which as find_executable
 
 import PDB
@@ -35,6 +37,7 @@ from Bio import SwissProt
 from shutil import copy2, rmtree
 from shutil import which as find_executable
 import subprocess
+import xml.etree.ElementTree as ET
 
 
 #pathsrcDesc ="/home/leslieregad/Dropbox/Projet/uroTest/sa-conf-beta/"
@@ -1404,25 +1407,77 @@ def def_important_pos(file_param, vect_pos) :
    return(listPos)
 
 
+def fetch_xml(pdb_code, args):
+    """Fetch the validation XML file from the PDB"""
+    out_dir = os.path.join(args.output, "XML")
+    os.makedirs(out_dir, exist_ok=True)
+    dir_structure = pdb_code.lower()[1:3]
+    url = f"https://files.rcsb.org/pub/pdb/validation_reports/{dir_structure}/{pdb_code.lower()}/{pdb_code.lower()}_validation.xml.gz"
+    file_path_gz = os.path.join(out_dir, f"{pdb_code}_validation.xml.gz")
+    file_path = file_path_gz[:-3]
+    if not os.path.isfile(file_path):
+        try:
+            urllib.request.urlretrieve(url, file_path_gz)
+            with gzip.open(file_path_gz, 'rb') as gz_file:
+                with open(file_path, 'wb') as out_file:
+                    shutil.copyfileobj(gz_file, out_file)
+            os.remove(file_path_gz)            
+        except Exception as e:
+            print(f"[ERROR] Downloading XML file : {e}")
+            
+
+def get_rsrz(xml_file):
+    """Extract RSRZ for the alpha carbons from the validation XML file"""
+    rsrz_dict = {}
+    try:
+        # Parse the XML file
+        tree = ET.parse(xml_file)
+        root = tree.getroot()
+
+        # Iterate through all <ModelledSubgroup> elements
+        for subgroup in root.findall(".//ModelledSubgroup"):
+            model = subgroup.attrib.get("model")
+            resnum = subgroup.attrib.get("resnum")
+            chain = subgroup.attrib.get("chain")
+            rsrz = subgroup.attrib.get("rsrz")
+            # Ensure it's model="1" and contains the required attributes
+            if model == "1" and resnum and chain and rsrz:
+                resnum = int(resnum)
+                rsrz = float(rsrz)
+                if chain not in rsrz_dict:
+                    rsrz_dict[chain] = {}
+                rsrz_dict[chain][resnum] = rsrz
+        return rsrz_dict
+    except FileNotFoundError:
+        print(f"[ERROR] File not found: {xml_file}")
+        return {}
+    except ET.ParseError:
+        print(f"[ERROR] Failed to parse XML file: {xml_file}")
+        return {}
+
+
 def extractMissingRSRZ(args, pdb_list):
     """Create a file that contains info for each residue (missing/RSRZ)"""
     fname_indiv = os.path.join(args.output, "res_info.csv")
     with open (fname_indiv, "w") as file_indiv:
-        file_indiv.write("pdb,chain,resnum,resname,missing\n")
+        file_indiv.write("pdb,chain,resnum,resname,missing,rsrz\n")
         for pdb_path in pdb_list:
             pdb_file = os.path.basename(pdb_path)
             pdb_code = pdb_file.split(".")[0]
             pdb = PDB6.PDB(pdb_path, hetSkip=1)
+            # Download and read validation XML file
+            xml_file = os.path.join(args.output, "XML", f"{pdb_code}_validation.xml")
+            fetch_xml(pdb_code, args)
+            # Read RSRZ
+            rsrz_dict = get_rsrz(xml_file)
             res_dict = pdb.getAllRes()
             for chain in res_dict:
                 for res in res_dict[chain]:
                     resnum = res[0]
                     resname = res[1]
                     missing = int(res[2] == "missing")
-                    file_indiv.write(f"{pdb_code},{chain},{resnum},{resname},{missing}\n")
-        
-    
-
+                    rsrz = rsrz_dict.get(chain, {}).get(resnum, "")
+                    file_indiv.write(f"{pdb_code},{chain},{resnum},{resname},{missing},{rsrz}\n")
 
 
 def gen_pml(args):
