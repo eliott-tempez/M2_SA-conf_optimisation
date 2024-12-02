@@ -28,6 +28,13 @@ AA = read.table(fileAA)
 file.correp = paste(pathsaconf, "corresp_Swss_align.csv",sep="/")
 fileC = read.table(file.correp,sep=",",header=T)
 
+file.res = paste(pathsaconf, "res_info.csv",sep="/")
+infoRes = read.csv(file.res)
+
+file.position = paste(pathsaconf, "position_alignment.fasta2",sep="/")
+ali = read.table(file.position)
+ali = as.data.frame(ali[seq(2, dim(ali)[1], 2), ])
+
 #-----------------------------------------
 # File output
 #-----------------------------------------
@@ -47,18 +54,17 @@ file.SLVar = paste(pathsaconf, "Structural_Variable_position_res.txt",sep="/")
 #-----------------------------------------
 #AA
 AlphabetAA = c("-","A","I","L","M","F","W","V","R","K","N","Q","S","T","C","E","D","G","H","Y","P")
-VectcolAA = c("purple4","blue4","skyblue4","blue1","skyblue","paleturquoise2","lightblue1","red1","red3",
+VectcolAA = c("black", "purple4","blue4","skyblue4","blue1","skyblue","paleturquoise2","lightblue1","red1","red3",
               "olivedrab1","green","green3","olivedrab4","pink","magenta1","magenta3","orange","cyan1",
               "cyan4","yellow2")
-names(VectcolAA) =  AlphabetAA[2:length(AlphabetAA)]      
+names(VectcolAA) =  AlphabetAA[1:length(AlphabetAA)]      
 
 
 #SL
 Alphabet=c("-","a","A","V","W","Z","B","C","D","E","O","S","R","Q","I","F","U","P","H","G","Y","J","K",
            "L","N","M","T","X")
-VectcolSL=c("#FF0000FF", "#FF3900FF", "#FF7100FF" ,"#FFAA00FF", "#FFE300FF" , "#FF0071FF","#FF0039FF" ,"#FF00AAFF" ,   "#FF00E3FF" , "#E300FFFF", "#AA00FFFF", "#7100FFFF", "#3900FFFF", "#0000FFFF", "#0039FFFF" , "#0071FFFF","#00AAFFFF","#00E3FFFF" ,"#00FFE3FF", "#00FFAAFF","#00FF71FF", "#00FF39FF","#39FF00FF","#00FF00FF" ,"#71FF00FF", "#AAFF00FF","#E3FF00FF" )
-VectcolSL=c("red4","red","indianred3", "tomato2","orange","yellow","yellow3","seashell2","mistyrose1","pink","violet","pink3","purple","purple4","lavenderblush4","blue","steelblue","cyan","paleturquoise","powderblue","palegoldenrod",'bisque4',"darkcyan","green","yellowgreen","olivedrab4","khaki4")
-names(VectcolSL) =  Alphabet[2:length(Alphabet)]  
+VectcolSL=c("black","red4","red","indianred3", "tomato2","orange","yellow","yellow3","seashell2","mistyrose1","pink","violet","pink3","purple","purple4","lavenderblush4","blue","steelblue","cyan","paleturquoise","powderblue","palegoldenrod",'bisque4',"darkcyan","green","yellowgreen","olivedrab4","khaki4")
+names(VectcolSL) =  Alphabet[1:length(Alphabet)]  
 
 
 #-------------------------------------------------------------------------------
@@ -68,7 +74,7 @@ names(VectcolSL) =  Alphabet[2:length(Alphabet)]
 
 f1 = function(vect){
    v1 = table(vect)
-   v2 = length(which(names(v1)!="NA"))
+   v2 = length(which(names(v1)!="NA" & names(v1)!="-"))
    return(v2)
 }
 
@@ -139,8 +145,9 @@ f.defColSS = function(mm){
 
 
 computNeq = function(mat){
+    mat[mat == "-"] <- NA
     neqVect = NULL
-    for ( i in 1:dim(mat)[2]){
+    for (i in 1:dim(mat)[2]){
         vect = mat[which(mat[,i]!="NA"),i]
         pourc = length(vect)/dim(mat)[1]
         if (pourc < 0.50){
@@ -346,14 +353,126 @@ f.ExtractPDB.Pos = function(folder_out){
        }else{
            listePos = unlist(strsplit(ali[i],'\\.'))
            matPos = cbind(matPos, listePos)
-       } 
-
-       
+       }
    }
    return(list(matPos = matPos, listProt = listProt))
 }
 
 
+getUnres = function(infoRes, listPDB) {
+  # Get the unresolved resnums for each protein
+  unresolved_list = list()
+  for (i in seq_along(listPDB)) {
+    pdbName = listPDB[i]
+    Pdb = unlist(strsplit(pdbName, "_"))[1]
+    Chain = unlist(strsplit(pdbName, "_"))[2]
+    info = subset(infoRes, pdb == Pdb & chain == Chain)
+    unres = subset(info, missing == 1)$resnum
+    unresolved_list[[i]] = as.numeric(unres)
+  }
+  return(unresolved_list)
+}
+
+
+resAroundGap = function(matAANum, i, j_start) {
+  # Take the index of the beginning of a gap and return the gap length
+  # and the resnums around the gap
+  gapLen = 0
+  j = j_start
+  # Find the end of the gap
+  while (j < dim(matAANum)[2] & matAANum[i, j] == "-") {
+    gapLen = gapLen + 1
+    j = j + 1
+  }
+  # Handle the edges
+  if (j_start == 1) {
+    res_before = NA
+    res_after = matAANum[i, j]
+  }
+  else if (j == dim(matAANum)[2]) {
+    res_before = matAANum[i, j_start-1]
+    res_after = NA
+    gapLen = gapLen + 1
+  }
+  # If we have a "real" gap (not on the edge)
+  else {
+    res_before = matAANum[i, j_start-1]
+    res_after = matAANum[i, j]
+  }
+  return(list(gapLen = gapLen, res_before = res_before, res_after = res_after))
+}
+
+
+calculateIdxUnres = function(unres.lst, matAANum, i, j_start) {
+  # For each gap, return the column indexes corresponding to unresolved residues
+  v.j = c()
+  result = resAroundGap(matAANum, i, j_start)
+  gapLen = result$gapLen
+  resnum_start =  if (is.na(result$res_before)) NA else as.numeric(result$res_before) + 1
+  resnum_end = if (is.na(result$res_after)) NA else as.numeric(result$res_after) - 1
+  
+  # If we are at the beginning of the alignment
+  if (is.na(resnum_start)) {
+    j = j_start + (gapLen - 1)
+    while (j >= 1 & resnum_end %in% unres.lst[[i]]) {
+      v.j = c(v.j, j)
+      resnum_end = resnum_end - 1
+      j = j - 1
+    }
+  }
+  
+  # If we are at the end of the alignment
+  else if (is.na(resnum_end)) {
+    j = j_start
+    while (j <= dim(matAANum)[2] & resnum_start %in% unres.lst[[i]]) {
+      v.j = c(v.j, j)
+      resnum_start = resnum_start + 1
+      j = j + 1
+    }
+  }
+  
+  # If we have a "real" gap
+  else if (resnum_start <= resnum_end) {
+    unresolved_in_gap = resnum_start:resnum_end %in% unres.lst[[i]]
+    theoricLen = sum(unresolved_in_gap)
+    unresolved_indices = which(unresolved_in_gap) + j_start - 1
+    if (theoricLen > 0) {
+      # Center unresolved residues within the gap
+      if (theoricLen < gapLen) {
+        offset = floor((gapLen - theoricLen) / 2)
+        unresolved_indices = unresolved_indices + offset
+      }
+      v.j = c(v.j, unresolved_indices)
+    }
+  }
+  return(v.j)
+}
+
+
+getUnresIdx = function(matAANum, infoRes, listPDB) {
+  # Take the matAANum and return a binary matrix of the same size
+  # with 1 where there is a gap due to an unresolved residue
+  matDim = dim(matAANum)
+  matGaps = matrix(0, matDim[1], matDim[2])  # Binary matrix for gap presence
+  unres.lst = getUnres(infoRes, listPDB)
+  
+  for (i in seq_len(matDim[1])) {
+    j = 1
+    while (j <= matDim[2]) {
+      if (matAANum[i, j] == "-") {
+        j_unres = calculateIdxUnres(unres.lst, matAANum, i, j)
+        if (length(j_unres) > 0) {
+          matGaps[i, j_unres] = 1
+        }
+        while (j <= matDim[2] && matAANum[i, j] == "-") {
+          j = j + 1
+        }
+      }
+      j = j + 1
+    }
+  }
+  return(matGaps)
+}
 
 
 
@@ -376,16 +495,29 @@ f.ExtractPDB.Pos = function(folder_out){
 #-----------------------------------------
 tailleAA = length(unlist(strsplit(as.character(AA[1,]), "")))
 matAA = matrix(NA,ncol = tailleAA, nrow=dim(AA)[1])
+matAANum = matrix(NA,ncol = tailleAA, nrow=dim(AA)[1])
 
+# Compute alignment in matrices
 for (i in 1:dim(AA)[1]){
    ligne = as.character(AA[i,])
    vect = unlist(strsplit(ligne,""))
    matAA[i,] = vect
 }
 
+for (i in 1:dim(AA)[1]){
+  ligne = as.character(ali[i,])
+  vect = unlist(strsplit(ligne,"\\."))
+  matAANum[i,] = vect
+}
+
+# Get unresolved residues in the same shape as AA matrix
+matUnres = getUnresIdx(matAANum, infoRes, Listpdb)
+
+# Convert gaps due to unresolved residues to NA
 for (i in 1:dim(matAA)[1]){
-   indSel = which(matAA[i,]=="-")
-   matAA[i, indSel] = "NA"
+  indSel = which(matAA[i,]=="-")
+  Res = indSel[which(matUnres[i, indSel] != "1")]
+  matAA[i, Res] = "NA"
 }
 
 #recherche le nombre de LS par position
@@ -415,7 +547,7 @@ neqAAVect2[which(neqAAVect==0)]=NA
 
 Mat4 = matrix(NA, ncol = ncol(matAA), nrow= nrow(matAA))
 
-for (Ibs in 2:length(AlphabetAA)){
+for (Ibs in 1:length(AlphabetAA)){
     aa=AlphabetAA[Ibs]
     Mat4[which(matAA==aa)]=as.numeric(Ibs)
 }
@@ -434,7 +566,7 @@ axis(1,seq(0,(dim(Mat4)[2]-1), by=10)/dim(Mat4)[2],seq(1,dim(Mat4)[2], by=10),ce
 box()
 numero=as.numeric(names(table(Mat4)))
 plot(rep(0,length=length(numero)),numero,type="n",axes=F,ylab="",xlab="")
-text(rep(0,length=length(numero)),numero,label=AlphabetAA[numero],col=VectcolAA)	
+text(rep(0,length=length(numero)),numero,label=c("unresolved", AlphabetAA[numero[2:21]]),col=VectcolAA)	
 
 image(as.matrix(neqAAVect2), axes=FALSE, col = c("darkolivegreen1", "orange", "red"), breaks=c(0,1,1.5, max(neqAAVect)+1))
 box()
@@ -463,12 +595,12 @@ if (nbgraph>1){
         box()
         numero=as.numeric(names(table(Mat4)))
         plot(rep(0,length=length(numero)),numero,type="n",axes=F,ylab="",xlab="")
-        text(rep(0,length=length(numero)),numero,label=AlphabetAA[numero],col=VectcolAA)
+        text(rep(0,length=length(numero)),numero,label=c("unresolved", AlphabetAA[numero[2:21]]),col=VectcolAA)
         dev.off()
     }
 }
 
-
+matAA[matAA == "-"] <- NA
 
 #-----------------------------------------
 # Step 3 : compute the number of LS 
@@ -495,7 +627,7 @@ nbrLSbyPos = apply(matLS, 2, f1)
 nbrLSbyPosbySS = apply(matLS, 2, f2)
 
 #-----------------------------------------
-# Step 4 : LS maxtrix
+# Step 4 : LS matrix
 # evolution of the number of LS by position
 #-----------------------------------------
 
