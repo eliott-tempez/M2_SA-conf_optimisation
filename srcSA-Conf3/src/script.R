@@ -413,22 +413,15 @@ calculateIdxUnres = function(unres.lst, matAANum, i, j_start) {
   
   # If we are at the beginning of the alignment
   if (is.na(resnum_start)) {
-    j = j_start + (gapLen - 1)
-    while (j >= 1 & resnum_end %in% unres.lst[[i]]) {
-      v.j = c(v.j, j)
-      resnum_end = resnum_end - 1
-      j = j - 1
-    }
+    unresLen = min(sum(1:resnum_end %in% unres.lst[[i]]), gapLen)
+    v.j = c(v.j, 1:unresLen)
   }
   
   # If we are at the end of the alignment
   else if (is.na(resnum_end)) {
-    j = j_start
-    while (j <= dim(matAANum)[2] & resnum_start %in% unres.lst[[i]]) {
-      v.j = c(v.j, j)
-      resnum_start = resnum_start + 1
-      j = j + 1
-    }
+    rowLen = dim(matAANum)[2]
+    unresLen = min(sum(resnum_start:max(unres.lst[[i]]) %in% unres.lst[[i]]), gapLen)
+    v.j = c(v.j, (rowLen-unresLen+1):rowLen)
   }
   
   # If we have a "real" gap
@@ -449,7 +442,7 @@ calculateIdxUnres = function(unres.lst, matAANum, i, j_start) {
 }
 
 
-getUnresIdx = function(matAANum, infoRes, listPDB) {
+getUnresMatAA = function(matAANum, infoRes, listPDB) {
   # Take the matAANum and return a binary matrix of the same size
   # with 1 where there is a gap due to an unresolved residue
   matDim = dim(matAANum)
@@ -475,7 +468,55 @@ getUnresIdx = function(matAANum, infoRes, listPDB) {
 }
 
 
-
+getUnresMatLS = function(matUnres, matLS) {
+  matUnresLS = matrix(0, dim(matUnres)[1], dim(matUnres)[2])
+  for (i in seq_len(dim(matUnres)[1])) {
+    
+    # Beginning of the row
+    if (matUnres[i, 1] == 0) {
+      matUnresLS[i, 1:2] = 1
+      j = 3
+    }
+    else {
+      j = 1
+      while (matUnres[i, j] == 1) {
+        j = j + 1
+      }
+      matUnresLS[i, 1:(j+1)] = 1
+      j_start = j
+    }
+    
+    # End of the row
+    rowLen = dim(matUnres)[2]
+    if (matUnres[i, rowLen] == 0) {
+      matUnresLS[i, rowLen] = 1
+      j = rowLen - 1
+    }
+    else {
+      j = rowLen
+      while (matUnres[i, j] == 1) {
+        j = j - 1
+      }
+      matUnresLS[i, rowLen:j] = 1
+      j_end = j
+    }
+    
+    # Parse the rest of the row
+    j = j_start
+    while (j <= j_end) {
+      if (matUnres[i, j] == 1) {
+        start = j - 1
+        while (matUnres[i, j] == 1) {
+          j = j + 1
+        }
+        end = j + 1
+        matUnresLS[i, start:end] = 1
+      }
+      j = j + 1
+    }
+  }
+  return(matUnresLS)
+}
 
 
 
@@ -511,7 +552,7 @@ for (i in 1:dim(AA)[1]){
 }
 
 # Get unresolved residues in the same shape as AA matrix
-matUnres = getUnresIdx(matAANum, infoRes, Listpdb)
+matUnres = getUnresMatAA(matAANum, infoRes, Listpdb)
 
 # Convert gaps due to unresolved residues to NA
 for (i in 1:dim(matAA)[1]){
@@ -578,6 +619,7 @@ dev.off()
 
 
 
+
 nbgraph = round(dim(Mat4)[1]/50,0)
 
 if (nbgraph>1){
@@ -602,6 +644,7 @@ if (nbgraph>1){
 
 matAA[matAA == "-"] <- NA
 
+
 #-----------------------------------------
 # Step 3 : compute the number of LS 
 # by position
@@ -615,9 +658,14 @@ for (i in 1:dim(LS)[1]){
    matLS[i,] = vect
 }
 
+# Get unresolved
+matUnresLS = getUnresMatLS(matUnres, matLS)
+
+# Convert gaps due to unresolved residues to NA
 for (i in 1:dim(matLS)[1]){
    indSel = which(matLS[i,]=="-")
-   matLS[i, indSel] = "NA"
+   Res = indSel[which(matUnresLS[i, indSel] != "1")]
+   matLS[i, Res] = "NA"
 }
 
 
@@ -633,7 +681,7 @@ nbrLSbyPosbySS = apply(matLS, 2, f2)
 
 Mat3 = matrix(NA, ncol = ncol(matLS), nrow= nrow(matLS))
 
-for (Ibs in 2:length(Alphabet)){
+for (Ibs in 1:length(Alphabet)){
     bs=Alphabet[Ibs]
     Mat3[which(matLS==bs)]=as.numeric(Ibs)
 }
@@ -656,7 +704,7 @@ neqLSVect2[which(neqLSVect==0)]=NA
 pdf(file.SLalign,width=11,height=8)
 par(mar = c(2, 1.8,1 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
 nf <- layout(matrix(1:4,2,2,byrow=TRUE), c(22,6, 22, 6), c(22,5.5,22,5.5), TRUE)
-image(t(Mat3)[,nrow(Mat3):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="", br=1:28)
+image(t(Mat3)[,nrow(Mat3):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="",br=0:28)
       #breaks=seq(min(Mat3,na.rm=T),(max(Mat3,na.rm=T)+1))
 axis(2,seq(1,0,length=dim(Mat3)[1]),rownames(Mat3),cex.axis=0.7,las=1)
 axis(1,seq(0,(dim(Mat3)[2]-1), by=10)/dim(Mat3)[2],seq(1,dim(Mat3)[2], by=10),cex.axis=0.6,las=1)
@@ -664,9 +712,9 @@ axis(1,seq(0,(dim(Mat3)[2]-1), by=10)/dim(Mat3)[2],seq(1,dim(Mat3)[2], by=10),ce
 
 box()
 #numero=as.numeric(names(table(Mat3)))
-numero = 2:28
+numero = 1:28
 plot(rep(0,length=length(numero)),numero,type="n",axes=F,ylab="",xlab="")
-text(rep(0,length=length(numero)),numero,label=Alphabet[numero],col=VectcolSL)	
+text(rep(0,length=length(numero)),numero,label=c("unresolved", Alphabet[numero[2:28]]),col=VectcolSL)	
 
 image(as.matrix(neqLSVect2), axes=FALSE, col = c("magenta", "cyan", "blue"), breaks=c(0,1,1.5, max(neqLSVect)+1))
 box()
@@ -694,13 +742,13 @@ if (nbgraph>1){
         box()
         numero=as.numeric(names(table(Mat3)))
         plot(rep(0,length=length(numero)),numero,type="n",axes=F,ylab="",xlab="")
-        text(rep(0,length=length(numero)),numero,label=Alphabet[numero],col=VectcolSL)	
+        text(rep(0,length=length(numero)),numero,label=c("unresolved", Alphabet[numero[2:28]]),col=VectcolSL)		
         dev.off()
        
     }
 }
 
-
+matLS[matLS == "-"] <- NA
 
 
 
