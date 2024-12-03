@@ -519,6 +519,29 @@ getUnresMatLS = function(matUnres, matLS) {
 }
 
 
+computeRSRZ = function(matAANum, infoRes, listPDB) {
+  # Get RSRZ matrix in the same shape as matAA
+  matRsrz = matrix(NA, dim(matAA)[1], dim(matAA)[2])
+  for (i in seq_len(dim(matAANum)[1])) {
+    # Look for corresponding line in infoRes
+    pdbName = listPDB[i]
+    Pdb = unlist(strsplit(pdbName, "_"))[1]
+    Chain = unlist(strsplit(pdbName, "_"))[2]
+    info = subset(infoRes, pdb == Pdb & chain == Chain)
+    # Add corresponding rsrz
+    for (j in seq_len(dim(matAANum)[2])) {
+      resnum = matAANum[i, j]
+      if (resnum != "-") {
+        resnum = as.numeric(resnum)
+        rsrz_value = info[info$resnum == resnum, "rsrz"]
+        matRsrz[i, j] = rsrz_value
+      }
+    }
+  }
+  return(matRsrz)
+}
+
+
 
 
 
@@ -553,6 +576,9 @@ for (i in 1:dim(AA)[1]){
 
 # Get unresolved residues in the same shape as AA matrix
 matUnres = getUnresMatAA(matAANum, infoRes, Listpdb)
+
+# Compute RSRZ matrix
+matRsrz = computeRSRZ(matAANum, infoRes, Listpdb)
 
 # Convert gaps due to unresolved residues to NA
 for (i in 1:dim(matAA)[1]){
@@ -594,14 +620,23 @@ for (Ibs in 1:length(AlphabetAA)){
 }
 rownames(Mat4) = Listpdb
 
+# Compute alignment columns for which the RSRZ is > 2 for more than 50% of the proteins
+matRsrz[is.na(matRsrz)] = 0
+rsrsThreshold = ceiling(dim(matRsrz)[1]/2)
+axisRSRZ = which(apply(matRsrz > 2, 2, sum) > rsrsThreshold)
+
 
 pdf(file.AAalign,width=11,height=8)
-par(mar = c(2, 1.8,1 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
+par(mar = c(2, 1.8, 2, 0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
 nf <- layout(matrix(1:4,2,2,byrow=TRUE), c(22,6, 22, 6), c(22,5.5,22,5.5), TRUE)
 image(t(Mat4)[,nrow(Mat4):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolAA,axes=F,main="")
       #breaks=seq(min(Mat4,na.rm=T),(max(Mat4,na.rm=T)+1))
 axis(2,seq(1,0,length=dim(Mat4)[1]),rownames(Mat4),cex.axis=0.6,las=1)
 axis(1,seq(0,(dim(Mat4)[2]-1), by=10)/dim(Mat4)[2],seq(1,dim(Mat4)[2], by=10),cex.axis=0.6,las=1)
+# Add tick for rsrz columns
+if (length(axisRSRZ) > 0) {
+  axis(3, at=axisRSRZ/dim(Mat4)[2], labels=FALSE, col.ticks="red")
+  mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 #axis(4,seq(0,(dim(Mat4)[1]-1), by=5)/dim(Mat4)[1],sort(seq(1,dim(Mat4)[1], by=5),decreasing=T),cex.axis=0.6,las=1)
 
 box()
@@ -614,6 +649,7 @@ box()
 title(ylab="neqAA", line=1)
 plot(1:7,1:7, type="n", axes=F, ylab="", xlab="")
 legend("topleft", col=c("darkolivegreen1", "orange", "red"), pch= 15, legend=c('conserved \n neqAA=1', 'weakly mutated \n 1<neqAA<=1.5', 'strongly mutated \n neqAA>1.5'), bty="n",pt.lwd =2 ,y.intersp=2, cex=0.8)
+
 
 dev.off()
 
@@ -633,6 +669,9 @@ if (nbgraph>1){
         image(t(ssMat)[,nrow(ssMat):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolAA,axes=F,main="Amino acid alignment")
         axis(2,seq(1,0,length=dim(ssMat)[1]),rownames(ssMat),cex.axis=0.6,las=1)
         axis(1,seq(0,(dim(ssMat)[2]-1), by=10)/dim(ssMat)[2],seq(1,dim(ssMat)[2], by=10),cex.axis=0.6,las=1)
+        if (length(axisRSRZ) > 0) {
+          axis(3, at=axisRSRZ/dim(Mat4)[2], labels=FALSE, col.ticks="red")
+          mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 
         box()
         numero=as.numeric(names(table(Mat4)))
@@ -702,13 +741,16 @@ neqLSVect2[which(neqLSVect==0)]=NA
 #-----------------------------------------
 
 pdf(file.SLalign,width=11,height=8)
-par(mar = c(2, 1.8,1 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
+par(mar = c(2, 1.8, 2 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
 nf <- layout(matrix(1:4,2,2,byrow=TRUE), c(22,6, 22, 6), c(22,5.5,22,5.5), TRUE)
 image(t(Mat3)[,nrow(Mat3):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="",br=0:28)
       #breaks=seq(min(Mat3,na.rm=T),(max(Mat3,na.rm=T)+1))
 axis(2,seq(1,0,length=dim(Mat3)[1]),rownames(Mat3),cex.axis=0.7,las=1)
 axis(1,seq(0,(dim(Mat3)[2]-1), by=10)/dim(Mat3)[2],seq(1,dim(Mat3)[2], by=10),cex.axis=0.6,las=1)
 #axis(4,seq(1,dim(Mat3)[1], by=5)/dim(Mat3)[1],sort(seq(1,dim(Mat3)[1], by=5),decreasing=T),cex.axis=0.6,las=1)
+if (length(axisRSRZ) > 0) {
+  axis(3, at=axisRSRZ/dim(Mat4)[2], labels=FALSE, col.ticks="red")
+  mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 
 box()
 #numero=as.numeric(names(table(Mat3)))
@@ -738,6 +780,9 @@ if (nbgraph>1){
 
         axis(2,seq(1,0,length=dim(ssMat)[1]),rownames(ssMat),cex.axis=0.7,las=1)
         axis(1,seq(0,(dim(ssMat)[2]-1), by=10)/dim(ssMat)[2],seq(1,dim(ssMat)[2], by=10),cex.axis=0.6,las=1)
+        if (length(axisRSRZ) > 0) {
+          axis(3, at=axisRSRZ/dim(Mat4)[2], labels=FALSE, col.ticks="red")
+          mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 
         box()
         numero=as.numeric(names(table(Mat3)))
