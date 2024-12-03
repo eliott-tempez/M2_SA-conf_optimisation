@@ -1470,6 +1470,7 @@ def extractMissingRSRZ(args, pdb_list):
             fetch_xml(pdb_code, args)
             # Read RSRZ
             rsrz_dict = get_rsrz(xml_file)
+            # Read all other info
             res_dict = pdb.getAllRes()
             for chain in res_dict:
                 for res in res_dict[chain]:

@@ -2467,12 +2467,14 @@ class PDB:
 		# Extract indexes
 		index_raw = self.HMMrNum()
 		index = []
-		sublist = []
+		sublist = index_raw[0]
 		for i in range(len(index_raw)-1):
-			sublist += [int(val) for val in index_raw[i]]
-			if int(index_raw[i][-1]) >= int(index_raw[i+1][0]):
+			if int(index_raw[i][-1]) < int(index_raw[i+1][0]):
+				sublist += [int(val) for val in index_raw[i+1]]
+			else:
 				index.append(sublist)
-				sublist = []
+				sublist = [int(val) for val in index_raw[i+1]]
+		index.append(sublist)
 		# Extract sequences and give them the same shape as the indexes
 		seq = []
 		seq_raw = self.aaseq()
