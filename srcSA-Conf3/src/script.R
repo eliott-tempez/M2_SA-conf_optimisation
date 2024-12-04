@@ -54,9 +54,7 @@ file.SLVar = paste(pathsaconf, "Structural_Variable_position_res.txt",sep="/")
 #-----------------------------------------
 #AA
 AlphabetAA = c("-","A","I","L","M","F","W","V","R","K","N","Q","S","T","C","E","D","G","H","Y","P")
-VectcolAA = c("black", "purple4","blue4","skyblue4","blue1","skyblue","paleturquoise2","lightblue1","red1","red3",
-              "olivedrab1","green","green3","olivedrab4","pink","magenta1","magenta3","orange","cyan1",
-              "cyan4","yellow2")
+VectcolAA = c("black", "purple4","blue4","skyblue4","blue1","skyblue","paleturquoise2","lightblue1","red1","red3", "olivedrab1","green","green3","olivedrab4","pink","magenta1","magenta3","orange","cyan1", "cyan4","yellow2")
 names(VectcolAA) =  AlphabetAA[1:length(AlphabetAA)]      
 
 
@@ -476,8 +474,7 @@ getUnresMatLS = function(matUnres, matLS) {
     
     # Beginning of the row
     if (matUnres[i, 1] == 0) {
-      matUnresLS[i, 1:2] = 1
-      j_start = 3
+      j_start = 1
     }
     else {
       j = 1
@@ -491,8 +488,7 @@ getUnresMatLS = function(matUnres, matLS) {
     # End of the row
     rowLen = dim(matUnres)[2]
     if (matUnres[i, rowLen] == 0) {
-      matUnresLS[i, rowLen] = 1
-      j_end = rowLen - 1
+      j_end = rowLen
     }
     else {
       j = rowLen
@@ -630,9 +626,9 @@ axisRSRZ = which(apply(matRsrz > 2, 2, sum) > rsrsThreshold)
 
 
 pdf(file.AAalign,width=11,height=8)
-par(mar = c(2, 1.8, 2, 0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
+par(mar = c(1, 1.8, 2, 0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
 nf <- layout(matrix(1:4,2,2,byrow=TRUE), c(22,6, 22, 6), c(22,5.5,22,5.5), TRUE)
-image(t(Mat4)[,nrow(Mat4):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolAA,axes=F,main="")
+image(t(Mat4)[,nrow(Mat4):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolAA,axes=F,main="", br=0:21)
       #breaks=seq(min(Mat4,na.rm=T),(max(Mat4,na.rm=T)+1))
 axis(2,seq(1,0,length=dim(Mat4)[1]),rownames(Mat4),cex.axis=0.6,las=1)
 axis(1,seq(0,(dim(Mat4)[2]-1), by=10)/dim(Mat4)[2],seq(1,dim(Mat4)[2], by=10),cex.axis=0.6,las=1)
@@ -643,7 +639,7 @@ if (length(axisRSRZ) > 0) {
 #axis(4,seq(0,(dim(Mat4)[1]-1), by=5)/dim(Mat4)[1],sort(seq(1,dim(Mat4)[1], by=5),decreasing=T),cex.axis=0.6,las=1)
 
 box()
-numero=as.numeric(names(table(Mat4)))
+numero=1:21
 plot(rep(0,length=length(numero)),numero,type="n",axes=F,ylab="",xlab="")
 text(rep(0,length=length(numero)),numero,label=c("unresolved", AlphabetAA[numero[2:21]]),col=VectcolAA)	
 
@@ -657,8 +653,6 @@ legend("topleft", col=c("darkolivegreen1", "orange", "red"), pch= 15, legend=c('
 dev.off()
 
 
-
-
 nbgraph = round(dim(Mat4)[1]/50,0)
 
 if (nbgraph>1){
@@ -669,7 +663,7 @@ if (nbgraph>1){
         par(mar = c(3, 3.5,3 ,0))  
         ssMat = Mat4[(tailleLim[i]+1):tailleLim[(i+1)], ]
         nf <- layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
-        image(t(ssMat)[,nrow(ssMat):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolAA,axes=F,main="Amino acid alignment")
+        image(t(ssMat)[,nrow(ssMat):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolAA,axes=F,mai="Amino acid alignment", br=0:21)
         axis(2,seq(1,0,length=dim(ssMat)[1]),rownames(ssMat),cex.axis=0.6,las=1)
         axis(1,seq(0,(dim(ssMat)[2]-1), by=10)/dim(ssMat)[2],seq(1,dim(ssMat)[2], by=10),cex.axis=0.6,las=1)
         if (length(axisRSRZ) > 0) {
@@ -677,7 +671,7 @@ if (nbgraph>1){
           mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 
         box()
-        numero=as.numeric(names(table(Mat4)))
+        numero=1:21
         plot(rep(0,length=length(numero)),numero,type="n",axes=F,ylab="",xlab="")
         text(rep(0,length=length(numero)),numero,label=c("unresolved", AlphabetAA[numero[2:21]]),col=VectcolAA)
         dev.off()
@@ -744,7 +738,7 @@ neqLSVect2[which(neqLSVect==0)]=NA
 #-----------------------------------------
 
 pdf(file.SLalign,width=11,height=8)
-par(mar = c(2, 1.8, 2 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
+par(mar = c(1, 1.8, 2 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
 nf <- layout(matrix(1:4,2,2,byrow=TRUE), c(22,6, 22, 6), c(22,5.5,22,5.5), TRUE)
 image(t(Mat3)[,nrow(Mat3):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="",br=0:28)
       #breaks=seq(min(Mat3,na.rm=T),(max(Mat3,na.rm=T)+1))
@@ -779,7 +773,7 @@ if (nbgraph>1){
         nf <- layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
         ssMat = Mat3[(tailleLim[i]+1):tailleLim[(i+1)], ]
 
-        image(t(ssMat)[,nrow(ssMat):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="Structural letter alignment")
+        image(t(ssMat)[,nrow(ssMat):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="Structural letter alignment", br=0:28)
 
         axis(2,seq(1,0,length=dim(ssMat)[1]),rownames(ssMat),cex.axis=0.7,las=1)
         axis(1,seq(0,(dim(ssMat)[2]-1), by=10)/dim(ssMat)[2],seq(1,dim(ssMat)[2], by=10),cex.axis=0.6,las=1)
@@ -788,7 +782,7 @@ if (nbgraph>1){
           mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 
         box()
-        numero=as.numeric(names(table(Mat3)))
+        numero=1:28
         plot(rep(0,length=length(numero)),numero,type="n",axes=F,ylab="",xlab="")
         text(rep(0,length=length(numero)),numero,label=c("unresolved", Alphabet[numero[2:28]]),col=VectcolSL)		
         dev.off()
