@@ -2463,32 +2463,19 @@ class PDB:
 
 	def getAllRes(self):
 		res = {}
-     
-		# Extract indexes
-		index_raw = self.HMMrNum()
-		index = []
-		sublist = index_raw[0]
-		for i in range(len(index_raw)-1):
-			if int(index_raw[i][-1]) < int(index_raw[i+1][0]):
-				sublist += [int(val) for val in index_raw[i+1]]
-			else:
-				index.append(sublist)
-				sublist = [int(val) for val in index_raw[i+1]]
-		index.append(sublist)
-		# Extract sequences and give them the same shape as the indexes
-		seq = []
-		seq_raw = self.aaseq()
-		i = 0
-		for sublist in index:
-			length = len(sublist)
-			segment = list(seq_raw[i:i+length])
-			seq.append(segment)
-			i += length
-		# Create dict for each resolved residue
 		solved_dict = {}
-		possible_keys = list(string.ascii_uppercase) + list(string.ascii_lowercase)
-		for i in range(len(index)):
-			solved_dict[possible_keys[i]] = [[int(index[i][j]), seq[i][j]] for j in range(len(index[i]))]
+     
+		# Extract List of solved residues
+		chains = self.chnList()
+		for chain in chains:
+			solved_dict[chain] = []
+			chain_data = self[chain]
+   
+			for residue in chain_data:
+				res_name = residue.rName()
+				res_num = residue.rNum()
+				solved_dict[chain].append([int(res_num), SEQREStoAA1(res_name)])
+  
 		# Extract dict of missing residues
 		missing_dict = self.missingRes()
   
@@ -2500,7 +2487,7 @@ class PDB:
 			missing_entries = [entry + ['missing'] for entry in missing_list]
 			# Combine the lists and sort by the first element (index)
 			res[key] = sorted(solved_entries + missing_entries, key=lambda x: x[0])
-  
+
 		return dict(sorted(res.items()))
         
 

@@ -450,24 +450,26 @@ getUnresMatAA = function(matAANum, infoRes, listPDB) {
   unres.lst = getUnres(infoRes, listPDB)
   
   for (i in seq_len(matDim[1])) {
-    j = 1
-    while (j <= matDim[2]) {
-      if (matAANum[i, j] == "-") {
-        j_unres = calculateIdxUnres(unres.lst, matAANum, i, j)
-        if (length(j_unres) > 0) {
-          matGaps[i, j_unres] = 1
+    if (length(unres.lst[[i]]) != 0) {
+      j = 1
+      while (j <= matDim[2]) {
+        if (matAANum[i, j] == "-") {
+          j_unres = calculateIdxUnres(unres.lst, matAANum, i, j)
+          if (length(j_unres) > 0) {
+            matGaps[i, j_unres] = 1
+          }
+          while (j <= matDim[2] && matAANum[i, j] == "-") {
+            j = j + 1
+          }
         }
-        while (j <= matDim[2] && matAANum[i, j] == "-") {
-          j = j + 1
-        }
+        j = j + 1
       }
-      j = j + 1
     }
+    return(matGaps)
   }
-  return(matGaps)
 }
-
-
+  
+  
 getUnresMatLS = function(matUnres, matLS) {
   matUnresLS = matrix(0, dim(matUnres)[1], dim(matUnres)[2])
   for (i in seq_len(dim(matUnres)[1])) {
@@ -475,7 +477,7 @@ getUnresMatLS = function(matUnres, matLS) {
     # Beginning of the row
     if (matUnres[i, 1] == 0) {
       matUnresLS[i, 1:2] = 1
-      j = 3
+      j_start = 3
     }
     else {
       j = 1
@@ -490,7 +492,7 @@ getUnresMatLS = function(matUnres, matLS) {
     rowLen = dim(matUnres)[2]
     if (matUnres[i, rowLen] == 0) {
       matUnresLS[i, rowLen] = 1
-      j = rowLen - 1
+      j_end = rowLen - 1
     }
     else {
       j = rowLen
@@ -517,6 +519,7 @@ getUnresMatLS = function(matUnres, matLS) {
   }
   return(matUnresLS)
 }
+
 
 
 computeRSRZ = function(matAANum, infoRes, listPDB) {
