@@ -1544,7 +1544,7 @@ class PDB:
 		return R_VALUE
 
 	# Missing residues
-	def missingRes(self):
+	def missingRes(self, Chain=None):
 		misRes = {}
 
 		# Get chunk with info
@@ -1565,6 +1565,8 @@ class PDB:
 				res3 = line_split[2]
 				res1 = SEQREStoAA1(res3)
 				chain = line_split[3]
+				if Chain is not None and chain != Chain:
+					continue
 				resNum = line_split[4]
 				if chain not in misRes:
 					misRes[chain] = []
@@ -2461,12 +2463,15 @@ class PDB:
 		return 0,0,0
 
 
-	def getAllRes(self):
+	def getAllRes(self, Chain=None):
 		res = {}
 		solved_dict = {}
      
 		# Extract List of solved residues
-		chains = self.chnList()
+		if Chain is not None:
+			chains = Chain
+		else:
+			chains = self.chnList()
 		for chain in chains:
 			solved_dict[chain] = []
 			chain_data = self[chain]
@@ -2477,7 +2482,7 @@ class PDB:
 				solved_dict[chain].append([int(res_num), SEQREStoAA1(res_name)])
   
 		# Extract dict of missing residues
-		missing_dict = self.missingRes()
+		missing_dict = self.missingRes(Chain)
   
 		# Merge the dictionaries
 		for key in set(solved_dict.keys()).union(missing_dict.keys()):

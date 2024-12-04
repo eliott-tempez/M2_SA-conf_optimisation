@@ -1426,7 +1426,7 @@ def fetch_xml(pdb_code, args):
             print(f"[ERROR] Downloading XML file : {e}")
             
 
-def get_rsrz(xml_file):
+def get_rsrz(xml_file, Chain=None):
     """Extract RSRZ for the alpha carbons from the validation XML file"""
     rsrz_dict = {}
     try:
@@ -1440,6 +1440,10 @@ def get_rsrz(xml_file):
             resnum = subgroup.attrib.get("resnum")
             chain = subgroup.attrib.get("chain")
             rsrz = subgroup.attrib.get("rsrz")
+            # Ensure we have the right chain
+            if Chain is not None:
+                if chain != Chain:
+                    continue
             # Ensure it's model="1" and contains the required attributes
             if model == "1" and resnum and chain and rsrz:
                 resnum = int(resnum)
@@ -1464,21 +1468,28 @@ def extractMissingRSRZ(args, pdb_list):
         for pdb_path in pdb_list:
             pdb_file = os.path.basename(pdb_path)
             pdb_code = pdb_file.split(".")[0]
-            pdb = PDB6.PDB(pdb_path, hetSkip=1)
+            pdb_code_list = pdb_code.split("_")
+            if len(pdb_code_list) > 1:
+                pdb_path = re.sub(f"{pdb_code}.pdb", f"{pdb_code_list[0]}.pdb", pdb_path)
+                chain_code = pdb_code_list[1]
+                pdb = PDB6.PDB(pdb_path, hetSkip=1)
+            else:
+                pdb = PDB6.PDB(pdb_path, hetSkip=1)
+                chain_code = None
             # Download and read validation XML file
-            xml_file = os.path.join(args.output, "XML", f"{pdb_code}_validation.xml")
-            fetch_xml(pdb_code, args)
+            xml_file = os.path.join(args.output, "XML", f"{pdb_code_list[0]}_validation.xml")
+            fetch_xml(pdb_code_list[0], args)
             # Read RSRZ
-            rsrz_dict = get_rsrz(xml_file)
+            rsrz_dict = get_rsrz(xml_file, chain_code)
             # Read all other info
-            res_dict = pdb.getAllRes()
+            res_dict = pdb.getAllRes(chain_code)
             for chain in res_dict:
                 for res in res_dict[chain]:
                     resnum = res[0]
                     resname = res[1]
                     missing = int(res[2] == "missing")
                     rsrz = rsrz_dict.get(chain, {}).get(resnum, "")
-                    file_indiv.write(f"{pdb_code},{chain},{resnum},{resname},{missing},{rsrz}\n")
+                    file_indiv.write(f"{pdb_code_list[0]},{chain},{resnum},{resname},{missing},{rsrz}\n")
 
 
 def gen_pml(args):
