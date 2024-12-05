@@ -622,7 +622,7 @@ rownames(Mat4) = Listpdb
 # Compute alignment columns for which the RSRZ is > 2 for more than 50% of the proteins
 matRsrz[is.na(matRsrz)] = 0
 rsrsThreshold = dim(matRsrz)[1]/2
-axisRSRZ = which(apply(matRsrz > 2, 2, sum) > rsrsThreshold)
+axisRSRZ = which(apply(matRsrz > 2, 2, sum) >= rsrsThreshold)
 
 
 pdf(file.AAalign,width=11,height=8)
