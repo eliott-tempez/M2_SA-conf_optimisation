@@ -473,8 +473,8 @@ getUnresMatAA = function(matAANum, infoRes, listPDB) {
         j = j + 1
       }
     }
-    return(matGaps)
   }
+  return(matGaps)
 }
   
   
