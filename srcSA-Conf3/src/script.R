@@ -3,7 +3,6 @@
 # To modify
 #-------------------------------------------------------------------------------
 
-folder_out = "saconf_out"
 seuilVar = 1.5
 
 
@@ -11,8 +10,19 @@ seuilVar = 1.5
 #-------------------------------------------------------------------------------
 # Variables
 #-------------------------------------------------------------------------------
+# Get command line arguments
+args <- commandArgs(trailingOnly = TRUE)
 
-source(paste(folder_out, "params.R", sep="/"))
+# Check if the path to params.R is provided as an argument
+if (length(args) < 1) {
+  stop("Error: Path to params.R must be provided as a command line argument.")
+}
+
+# Set the path to params.R
+params_path <- args[1]
+source(params_path)
+path_lst = unlist(strsplit(params_path, "/"))
+folder_out = paste(path_lst[1:(length(path_lst)-1)], collapse = "/")
 
 #-----------------------------------------
 # File input
