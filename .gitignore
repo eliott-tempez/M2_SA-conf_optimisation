@@ -1,7 +1,15 @@
+# PDFs
 *.pdf
 !saconf-tutorial.pdf
 !report.pdf
+
+# cache
 __pycache__/
-saconf_out/
 *.pyc
+
+# Old scripts
 *_old.py
+
+# outputs
+saconf_out/
+
