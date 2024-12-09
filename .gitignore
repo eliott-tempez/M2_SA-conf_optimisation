@@ -3,3 +3,4 @@ __pycache__/
 saconf_out/
 *.pyc
 *_old.py
+outputs/*/
