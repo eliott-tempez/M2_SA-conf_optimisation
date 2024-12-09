@@ -1461,10 +1461,10 @@ def get_rsrz(xml_file, Chain=None):
 
 
 def extractMissingRSRZ(args, pdb_list):
-    """Create a file that contains info for each residue (missing/RSRZ)"""
+    """Create a file that contains info for each residue (missing/RSRZ/b-factor)"""
     fname_indiv = os.path.join(args.output, "res_info.csv")
     with open (fname_indiv, "w") as file_indiv:
-        file_indiv.write("pdb,chain,resnum,resname,missing,rsrz\n")
+        file_indiv.write("pdb,chain,resnum,resname,missing,rsrz,bfact\n")
         for pdb_path in pdb_list:
             pdb_file = os.path.basename(pdb_path)
             pdb_code = pdb_file.split(".")[0]
@@ -1481,6 +1481,8 @@ def extractMissingRSRZ(args, pdb_list):
             fetch_xml(pdb_code_list[0], args)
             # Read RSRZ
             rsrz_dict = get_rsrz(xml_file, chain_code)
+            # Read b-factor
+            bfact_dict = pdb.get_bfact(chain_code)
             # Read all other info
             res_dict = pdb.getAllRes(chain_code)
             for chain in res_dict:
@@ -1489,7 +1491,8 @@ def extractMissingRSRZ(args, pdb_list):
                     resname = res[1]
                     missing = int(res[2] == "missing")
                     rsrz = rsrz_dict.get(chain, {}).get(resnum, "")
-                    file_indiv.write(f"{pdb_code_list[0]},{chain},{resnum},{resname},{missing},{rsrz}\n")
+                    bfact = bfact_dict.get(chain, {}).get(resnum, "")
+                    file_indiv.write(f"{pdb_code_list[0]},{chain},{resnum},{resname},{missing},{rsrz},{bfact}\n")
 
 
 def gen_pml(args):

@@ -2466,6 +2466,7 @@ class PDB:
 	def getAllRes(self, Chain=None):
 		res = {}
 		solved_dict = {}
+		bfact_dict = {}
      
 		# Extract List of solved residues
 		if Chain is not None:
@@ -2480,7 +2481,7 @@ class PDB:
 				res_name = residue.rName()
 				res_num = residue.rNum()
 				solved_dict[chain].append([int(res_num), SEQREStoAA1(res_name)])
-  
+
 		# Extract dict of missing residues
 		missing_dict = self.missingRes(Chain)
   
@@ -2490,11 +2491,35 @@ class PDB:
 			missing_list = missing_dict.get(key, [])
 			solved_entries = [entry + ['solved'] for entry in solved_list]
 			missing_entries = [entry + ['missing'] for entry in missing_list]
+
 			# Combine the lists and sort by the first element (index)
 			res[key] = sorted(solved_entries + missing_entries, key=lambda x: x[0])
 
 		return dict(sorted(res.items()))
         
+
+	def get_bfact(self, Chain=None):
+    # Get the B-factors for the CA of each residue in the chains
+		bfact_dict = {}
+		if Chain is not None:
+			chains = Chain
+		else:
+			chains = self.chnList()
+
+		for chain in chains:
+			bfact_dict[chain] = {}
+			chain_data = self[chain]
+   
+			for residue in chain_data:
+				res_num = int(residue.rNum())
+				for atom in residue:
+					if atom.atmName() == "CA":
+						tfact = float(atom.tfac().strip())
+						bfact_dict[chain][res_num] = tfact
+
+		return bfact_dict
+
+
 
 
 
