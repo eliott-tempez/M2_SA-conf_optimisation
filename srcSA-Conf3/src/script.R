@@ -551,7 +551,24 @@ computeRSRZ = function(matAANum, infoRes, listPDB) {
 }
 
 
-
+getBfactMat = function(infoRes, ali, listPDB) {
+  matBfact = matrix(NA, dim(ali)[1], dim(ali)[2])
+  for (i in seq_len(dim(matBfact)[1])) {
+    pdbName = listPDB[i]
+    Pdb = unlist(strsplit(pdbName, "_"))[1]
+    Chain = unlist(strsplit(pdbName, "_"))[2]
+    info = subset(infoRes, pdb == Pdb & chain == Chain)
+    for (j in seq_len(dim(matBfact)[2])) {
+      resnum = ali[i, j]
+      if (resnum != "-") {
+        resnum = as.numeric(resnum)
+        bFact = info[info$resnum == resnum, "bfact"]
+        matBfact[i, j] = bFact
+      }
+    }
+  }
+  return(t(apply(matBfact, 1, scale)))
+}
 
 
 
@@ -809,6 +826,10 @@ matLS[matLS == "-"] <- NA
 # Step 7 : Graphic Representation
 # evolution of the number of LS by position
 #-----------------------------------------
+# Get normalised b-factor 
+matBfact = getBfactMat(infoRes, matAANum, Listpdb)
+bfactMean = apply(matBfact, 2, mean, na.rm = TRUE)
+bfactQuali = ifelse(bfactMean > 0, "firebrick", "dodgerblue4")
 
 ##def graphics parameters
 mm = rbind( neqAAVect, neqLSVect)
@@ -847,6 +868,10 @@ axis(2,((-valmaxAA-2):(valmaxLS+2)), c(NA,abs(-valmaxAA:0),NA,(0:(valmaxLS)),NA)
 #legend of NeqSL
 legend("topleft", horiz = TRUE, legend=c("helix", "strand","loop","SS changes"), 
        col = c("red","green","gray","purple"), cex=0.8, pch=15,x.intersp=1, title=expression(neq[SL]))
+# B factor
+points(1:dim(mm)[2], rep(0.5, length=dim(mm)[2]), col=bfactQuali, pch=15)
+legend("topright", horiz = TRUE, legend=c("flexible", "rigid"), 
+       col = c("firebrick", "dodgerblue4"), cex=0.8, pch=15,x.intersp=1, title="B factor")
 #position vector
 points(1:dim(mm)[2],rep(0, length=dim(mm)[2]), pch=124, col = vcolLeg)
 text(1:dim(mm)[2],rep(-0.9, length=dim(mm)[2]),vLeg , col = 1, srt=90, cex=0.5, pos=3, offset=0.8)
