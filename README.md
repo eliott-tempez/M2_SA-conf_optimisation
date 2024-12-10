@@ -36,8 +36,8 @@ conda activate SA-conf
 The new additions include:
 - Switching from Python 2 to Python 3
 - Distinguishing unmodelled residues from absent residues bescause of DNA deletions in the graphs
-- Taking uncertain coordinates into account via the RSRZ
-- Taking the B-factor into account with a supplementary graph
+- Taking uncertain coordinates into account via the RSRZ and adding it to the main graphs
+- Taking the B-factor into account and adding it to the *neq* graph
 - Classifying the proteins according to their encoding
 
 
