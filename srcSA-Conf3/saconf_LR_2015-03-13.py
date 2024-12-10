@@ -1485,6 +1485,7 @@ def extractMissingRSRZ(args, pdb_list):
             bfact_dict = pdb.get_bfact(chain_code)
             # Read all other info
             res_dict = pdb.getAllRes(chain_code)
+            # Write to file
             for chain in res_dict:
                 for res in res_dict[chain]:
                     resnum = res[0]
