@@ -527,7 +527,6 @@ getUnresMatLS = function(matUnres, matLS) {
 }
 
 
-
 computeRSRZ = function(matAANum, infoRes, listPDB) {
   # Get RSRZ matrix in the same shape as matAA
   matRsrz = matrix(NA, dim(matAA)[1], dim(matAA)[2])
@@ -570,6 +569,24 @@ getBfactMat = function(infoRes, ali, listPDB) {
   return(t(apply(matBfact, 1, scale)))
 }
 
+
+get_chi_2_matrix = function(table_LS) {
+  # Calculate chi-2 distances for each sequence pair
+  n = nrow(table_LS)
+  chi2_dist = matrix(0, nrow = n, ncol = n, 
+                     dimnames = list(Listpdb, Listpdb))
+  # for each pair
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      # Extract chi2 result
+      test_result = chisq.test(table_LS[i,], table_LS[j,])
+      # Add to symetrical matrix
+      chi2_dist[i, j] = test_result$statistic
+      chi2_dist[j, i] = test_result$statistic
+    }
+  }
+  return(chi2_dist)
+}
 
 
 
@@ -820,6 +837,36 @@ if (nbgraph>1){
 matLS[matLS == "-"] <- NA
 
 
+#-----------------------------------------
+# Step 6 : Clustering
+# 
+#-----------------------------------------
+## Compute distances between LS sequences
+# Create contingency table
+unique_letters = unique(as.vector(matLS))
+table_LS = matrix(0, nrow = nrow(matLS), ncol = length(unique_letters),
+                   dimnames = list(Listpdb, unique_letters))
+for (row in seq_len(nrow(matLS))) {
+  for (letter in unique_letters) {
+    table_LS[row, letter] = sum(matLS[row,] == letter)
+  }
+}
+# Calculate chi-2 distances for each sequence pair
+chi2_dist = get_chi_2_matrix(table_LS)
+
+## Hierarchal clustering
+hc = hclust(as.dist(chi2_dist), method="ward.D2")
+# Calculate optimal number of clusters
+merge_heights = hc$height
+height_diffs = diff(merge_heights)
+elbow_point = which.max(height_diffs)
+optimal_clusters = length(merge_heights) - elbow_point + 1
+# plot dendrogram
+plot(hc)
+height_threshold = hc$height[length(hc$height) - (optimal_clusters - 1)]
+abline(h = height_threshold, col = "red", lty = 2, lwd = 2)
+# Calculate clusters
+clusters = cutree(hc, k = optimal_clusters)
 
 
 #-----------------------------------------
