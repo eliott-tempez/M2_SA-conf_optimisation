@@ -579,7 +579,7 @@ get_chi_2_matrix = function(table_LS) {
   for (i in 1:(n-1)) {
     for (j in (i+1):n) {
       # Extract chi2 result
-      test_result = chisq.test(table_LS[i,], table_LS[j,])
+      test_result = suppressWarnings(chisq.test(table_LS[i,], table_LS[j,]))
       # Add to symetrical matrix
       chi2_dist[i, j] = test_result$statistic
       chi2_dist[j, i] = test_result$statistic
