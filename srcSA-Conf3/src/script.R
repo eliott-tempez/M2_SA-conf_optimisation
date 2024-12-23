@@ -56,7 +56,7 @@ file_out1 =paste(pathsaconf, "Count_position_type.txt",sep="/")
 filePos_out = paste(pathsaconf, "Correspondence_positions.csv",sep="/")
 file.mut = paste(pathsaconf, "Mutation_res.txt",sep="/")
 file.SLVar = paste(pathsaconf, "Structural_Variable_position_res.txt",sep="/")
-
+file.clusters = paste(pathsaconf, "clusters.txt",sep="/")
 
 
 #-----------------------------------------
@@ -839,7 +839,6 @@ matLS[matLS == "-"] <- NA
 
 #-----------------------------------------
 # Step 6 : Clustering
-# 
 #-----------------------------------------
 ## Compute distances between LS sequences
 # Create contingency table
@@ -856,17 +855,31 @@ chi2_dist = get_chi_2_matrix(table_LS)
 
 ## Hierarchal clustering
 hc = hclust(as.dist(chi2_dist), method="ward.D2")
-# Calculate optimal number of clusters
-merge_heights = hc$height
-height_diffs = diff(merge_heights)
-elbow_point = which.max(height_diffs)
-optimal_clusters = length(merge_heights) - elbow_point + 1
-# plot dendrogram
-plot(hc)
-height_threshold = hc$height[length(hc$height) - (optimal_clusters - 1)]
-abline(h = height_threshold, col = "red", lty = 2, lwd = 2)
-# Calculate clusters
-clusters = cutree(hc, k = optimal_clusters)
+
+# Calculate optimal number of clusters with silhouette method
+if (!requireNamespace("cluster", quietly = TRUE)) {
+  suppressMessages(suppressWarnings(install.packages("cluster")))
+}
+suppressMessages(library(cluster))
+silhouette_scores <- sapply(2:(nrow(table_LS)-1), function(k) {
+  clusters <- cutree(hc, k)
+  silhouette_result <- silhouette(clusters, as.dist(chi2_dist))
+  mean(silhouette_result[, "sil_width"])
+})
+optimal_k <- which.max(silhouette_scores) + 1
+
+## Calculate clusters
+clusters = cutree(hc, k = optimal_k)
+
+## Print result in text file
+output_text <- paste0("Number of optimal clusters: ", optimal_k, "\n\n")
+for (k in seq_len(optimal_k)) {
+  cluster_proteins <- names(clusters[clusters == k])
+  cluster_line <- paste0("Cluster ", k, ": ", paste(cluster_proteins, collapse = ", "))
+  output_text <- paste(output_text, cluster_line, "\n", sep = "")
+}
+write(output_text, file = file.clusters)
+
 
 
 #-----------------------------------------
