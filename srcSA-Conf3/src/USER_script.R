@@ -414,7 +414,7 @@ rownames(Mat4) = Listpdb
 
 pdf(file.AAalign,width=12,paper="USr")
 par(mar = c(3, 3.5,1 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
-nf <- layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
+nf = layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
 image(t(Mat4)[,nrow(Mat4):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolAA,axes=F,main="Amino acid alignment")
       #breaks=seq(min(Mat4,na.rm=T),(max(Mat4,na.rm=T)+1))
 axis(2,seq(1,0,length=dim(Mat4)[1]),rownames(Mat4),cex.axis=0.6,las=1)
@@ -438,7 +438,7 @@ if (nbgraph>1){
         pdf(file.AAaligni,width=12,paper="USr")
         par(mar = c(3, 3.5,3 ,0))  
         ssMat = Mat4[(tailleLim[i]+1):tailleLim[(i+1)], ]
-        nf <- layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
+        nf = layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
         image(t(ssMat)[,nrow(ssMat):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolAA,axes=F,main="Amino acid alignment")
         axis(2,seq(1,0,length=dim(ssMat)[1]),rownames(ssMat),cex.axis=0.6,las=1)
         axis(1,seq(0,(dim(ssMat)[2]-1), by=10)/dim(ssMat)[2],seq(1,dim(ssMat)[2], by=10),cex.axis=0.6,las=1)
@@ -498,7 +498,7 @@ rownames(Mat3) = Listpdb
 
 pdf(file.SLalign,paper="USr", width=12)
 par(mar = c(3, 3.5,3 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
-nf <- layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
+nf = layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
 image(t(Mat3)[,nrow(Mat3):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="Structural letter alignment")
       #breaks=seq(min(Mat3,na.rm=T),(max(Mat3,na.rm=T)+1))
 axis(2,seq(1,0,length=dim(Mat3)[1]),rownames(Mat3),cex.axis=0.7,las=1)
@@ -522,7 +522,7 @@ if (nbgraph>1){
         file.SLaligni = paste(pathFig, paste("SL-alignment_", i, ".pdf", sep=""), sep="/")
         pdf(file.SLaligni,width=12,paper="USr")
         par(mar = c(3, 3.5,3 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
-        nf <- layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
+        nf = layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
         ssMat = Mat3[(tailleLim[i]+1):tailleLim[(i+1)], ]
 
         image(t(ssMat)[,nrow(ssMat):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="Structural letter alignment")

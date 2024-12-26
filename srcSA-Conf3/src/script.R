@@ -11,7 +11,7 @@ seuilVar = 1.5
 # Variables
 #-------------------------------------------------------------------------------
 # Get command line arguments
-args <- commandArgs(trailingOnly = TRUE)
+args = commandArgs(trailingOnly = TRUE)
 
 # Check if the path to params.R is provided as an argument
 if (length(args) < 1) {
@@ -19,7 +19,7 @@ if (length(args) < 1) {
 }
 
 # Set the path to params.R
-params_path <- args[1]
+params_path = args[1]
 source(params_path)
 path_lst = unlist(strsplit(params_path, "/"))
 folder_out = paste(path_lst[1:(length(path_lst)-1)], collapse = "/")
@@ -153,7 +153,7 @@ f.defColSS = function(mm){
 
 
 computNeq = function(mat){
-    mat[mat == "-"] <- NA
+    mat[mat == "-"] = NA
     neqVect = NULL
     for (i in 1:dim(mat)[2]){
         vect = mat[which(mat[,i]!="NA"),i]
@@ -671,7 +671,7 @@ axisRSRZ = which(apply(matRsrz > 2, 2, sum) >= rsrsThreshold)
 
 pdf(file.AAalign,width=11,height=8)
 par(mar = c(1, 1.8, 2, 0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
-nf <- layout(matrix(1:4,2,2,byrow=TRUE), c(22,6, 22, 6), c(22,5.5,22,5.5), TRUE)
+nf = layout(matrix(1:4,2,2,byrow=TRUE), c(22,6, 22, 6), c(22,5.5,22,5.5), TRUE)
 image(t(Mat4)[,nrow(Mat4):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolAA,axes=F,main="", br=0:21)
       #breaks=seq(min(Mat4,na.rm=T),(max(Mat4,na.rm=T)+1))
 axis(2,seq(1,0,length=dim(Mat4)[1]),rownames(Mat4),cex.axis=0.6,las=1)
@@ -706,7 +706,7 @@ if (nbgraph>1){
         pdf(file.AAaligni,width=11, height=8,paper="USr")
         par(mar = c(3, 3.5,3 ,0))  
         ssMat = Mat4[(tailleLim[i]+1):tailleLim[(i+1)], ]
-        nf <- layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
+        nf = layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
         image(t(ssMat)[,nrow(ssMat):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolAA,axes=F,mai="Amino acid alignment", br=0:21)
         axis(2,seq(1,0,length=dim(ssMat)[1]),rownames(ssMat),cex.axis=0.6,las=1)
         axis(1,seq(0,(dim(ssMat)[2]-1), by=10)/dim(ssMat)[2],seq(1,dim(ssMat)[2], by=10),cex.axis=0.6,las=1)
@@ -722,7 +722,7 @@ if (nbgraph>1){
     }
 }
 
-matAA[matAA == "-"] <- NA
+matAA[matAA == "-"] = NA
 
 
 #-----------------------------------------
@@ -783,7 +783,7 @@ neqLSVect2[which(neqLSVect==0)]=NA
 
 pdf(file.SLalign,width=11,height=8)
 par(mar = c(1, 1.8, 2 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
-nf <- layout(matrix(1:4,2,2,byrow=TRUE), c(22,6, 22, 6), c(22,5.5,22,5.5), TRUE)
+nf = layout(matrix(1:4,2,2,byrow=TRUE), c(22,6, 22, 6), c(22,5.5,22,5.5), TRUE)
 image(t(Mat3)[,nrow(Mat3):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="",br=0:28)
       #breaks=seq(min(Mat3,na.rm=T),(max(Mat3,na.rm=T)+1))
 axis(2,seq(1,0,length=dim(Mat3)[1]),rownames(Mat3),cex.axis=0.7,las=1)
@@ -814,7 +814,7 @@ if (nbgraph>1){
         file.SLaligni = paste(pathFig, paste("SL-alignment_", i, ".pdf", sep=""), sep="/")
         pdf(file.SLaligni,width=11,height=8)
         par(mar = c(3, 3.5,3 ,0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
-        nf <- layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
+        nf = layout(matrix(c(1,2),1,2,byrow=TRUE), c(22.7,4), c(20,20), TRUE)
         ssMat = Mat3[(tailleLim[i]+1):tailleLim[(i+1)], ]
 
         image(t(ssMat)[,nrow(ssMat):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="Structural letter alignment", br=0:28)
@@ -834,7 +834,7 @@ if (nbgraph>1){
     }
 }
 
-matLS[matLS == "-"] <- NA
+matLS[matLS == "-"] = "NA"
 
 
 #-----------------------------------------
@@ -861,22 +861,22 @@ if (!requireNamespace("cluster", quietly = TRUE)) {
   suppressMessages(suppressWarnings(install.packages("cluster")))
 }
 suppressMessages(library(cluster))
-silhouette_scores <- sapply(2:(nrow(table_LS)-1), function(k) {
-  clusters <- cutree(hc, k)
-  silhouette_result <- silhouette(clusters, as.dist(chi2_dist))
+silhouette_scores = sapply(2:(nrow(table_LS)-1), function(k) {
+  clusters = cutree(hc, k)
+  silhouette_result = silhouette(clusters, as.dist(chi2_dist))
   mean(silhouette_result[, "sil_width"])
 })
-optimal_k <- which.max(silhouette_scores) + 1
+optimal_k = which.max(silhouette_scores) + 1
 
 ## Calculate clusters
 clusters = cutree(hc, k = optimal_k)
 
 ## Print result in text file
-output_text <- paste0("Number of optimal clusters: ", optimal_k, "\n\n")
+output_text = paste0("Number of optimal clusters: ", optimal_k, "\n\n")
 for (k in seq_len(optimal_k)) {
-  cluster_proteins <- names(clusters[clusters == k])
-  cluster_line <- paste0("Cluster ", k, ": ", paste(cluster_proteins, collapse = ", "))
-  output_text <- paste(output_text, cluster_line, "\n", sep = "")
+  cluster_proteins = names(clusters[clusters == k])
+  cluster_line = paste0("Cluster ", k, ": ", paste(cluster_proteins, collapse = ", "))
+  output_text = paste(output_text, cluster_line, "\n", sep = "")
 }
 write(output_text, file = file.clusters)
 
