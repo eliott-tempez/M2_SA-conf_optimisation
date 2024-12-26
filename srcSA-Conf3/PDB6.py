@@ -127,8 +127,8 @@ def SEQREStoAA1(seqres):
 	aList = seqres.split()
 	for aRes in aList:
 		# print aRes
-		if aRes in AA3:
-			seq += AA1[AA3.index(aRes)]
+		if aRes in AA3STRICT:
+			seq += AA1[AA3STRICT.index(aRes)]
 		else:
 			seq += "X"
 		# print seq
