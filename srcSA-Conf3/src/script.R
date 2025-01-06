@@ -50,6 +50,7 @@ ali = as.data.frame(ali[seq(2, dim(ali)[1], 2), ])
 #-----------------------------------------
 file.AAalign = paste(pathFig, "AA-alignment.pdf", sep="/")
 file.SLalign = paste(pathFig, "SL-alignment.pdf", sep="/")
+file.Graphclusters = paste(pathFig, "Clusters.pdf",sep="/")
 file.neq = paste(pathFig, "Neq_graph.pdf", sep="/")
 file.out = paste(pathsaconf,"Position_description.csv",sep="/")
 file_out1 =paste(pathsaconf, "Count_position_type.txt",sep="/")
@@ -862,24 +863,25 @@ table_LS = matrix(0, nrow = nrow(matLS), ncol = length(unique_letters),
                    dimnames = list(Listpdb, unique_letters))
 for (row in seq_len(nrow(matLS))) {
   for (letter in unique_letters) {
-    print(letter)
     table_LS[row, letter] = sum(matLS[row,] == letter)
   }
 }
-# Calculate chi-2 distances for each sequence pair
-hamming_dist = get_hamming_matrix(table_LS) # Remplacer par get_chi_2_matrix si besoin
+
+# Calculate distances for each sequence pair (hamming or chi-2)
+dist_matrix = get_hamming_matrix(matLS) 
+#dist_matrix = get_chi_2_matrix(table_LS)
 
 ## Hierarchal clustering
-hc = hclust(as.dist(hamming_dist), method="ward.D2")
+hc = hclust(as.dist(dist_matrix), method="ward.D2")
 
 # Calculate optimal number of clusters with silhouette method
 if (!requireNamespace("cluster", quietly = TRUE)) {
   suppressMessages(suppressWarnings(install.packages("cluster")))
 }
 suppressMessages(library(cluster))
-silhouette_scores <- sapply(2:(nrow(table_LS)-1), function(k) {
+silhouette_scores <- sapply(2:(nrow(dist_matrix) - 1), function(k) {
   clusters <- cutree(hc, k)
-  silhouette_result <- silhouette(clusters, as.dist(chi2_dist))
+  silhouette_result <- silhouette(clusters, as.dist(dist_matrix))
   mean(silhouette_result[, "sil_width"])
 })
 optimal_k <- which.max(silhouette_scores) + 1
@@ -897,23 +899,49 @@ for (k in seq_len(optimal_k)) {
 write(output_text, file = file.clusters)
 
 
-
 ## Print result in graphical form
 # Order Mat3 by clusters
 ordered_Mat3 <- Mat3[order(clusters[rownames(Mat3)]), ]
 
-# Plot
-par(mar = c(3, 4, 2, 0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
-nf = layout(matrix(1:2, 1, 2, byrow=TRUE), c(22,15), c(22,22), TRUE)
+# Set up the page
+pdf(file.Graphclusters,width=11,height=8)
+par(mar = c(5, 0, 2, 0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
+nf = layout(matrix(1:8, 2, 4, byrow=TRUE), c(3, 15, 1, 4), c(15, 7), TRUE)
+plot.new()
+# Plot 1
 image(t(ordered_Mat3)[,nrow(ordered_Mat3):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="",br=0:28)
-axis(2,seq(1,0,length=dim(Mat3)[1]),rownames(Mat3),cex.axis=0.7,las=1)
-axis(1,seq(0,(dim(Mat3)[2]-1), by=10)/dim(Mat3)[2],seq(1,dim(Mat3)[2], by=10),cex.axis=0.6,las=1)
+axis(1,seq(0,(dim(ordered_Mat3)[2]-1), by=10)/dim(ordered_Mat3)[2],seq(1,dim(ordered_Mat3)[2], by=10),cex.axis=0.6,las=1)
+# Cluster visualisation
+Map(axis, side=2, at=seq(1,0,length=dim(ordered_Mat3)[1]), col.axis=rainbow(optimal_k)[sort(clusters)], labels=rownames(ordered_Mat3), lwd=0, las=1)
+axis(2, seq(1,0,length=dim(ordered_Mat3)[1]),labels=FALSE)
+# rsrz
+if (length(axisRSRZ) > 0) {
+  axis(3, at=axisRSRZ/dim(Mat4)[2], labels=FALSE, col.ticks="red")
+  mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 box()
+plot.new()
 numero = 1:28
+# Legend
 plot(rep(0,length=length(numero)),numero,type="n",axes=F,ylab="",xlab="")
-text(rep(0,length=length(numero)),numero,label=c("unresolved", Alphabet[numero[2:28]]),col=VectcolSL)	
-box()
+text(rep(0,length=length(numero)),numero,label=c("unresolved", Alphabet[numero[2:28]]),col=VectcolSL)
+# Plot the dendrogram
+plot.new()
+labelCol <- function(x) {
+  if (is.leaf(x)) {
+    ## fetch label
+    label <- attr(x, "label")
+    attr(x, "nodePar") <- list(lab.col=rainbow(optimal_k)[clusters[label]])
+  }
+  return(x)
+}
+par(cex = 0.6)
+hc_plot = dendrapply(as.dendrogram(hc), labelCol)
+plot(hc_plot, main = paste("Number of optimal clusters :", optimal_k))
+abline(h=optimal_k, col="orange")
+dev.off()
 
+
+matLS[matLS == "-"] = "NA"
 
 #-----------------------------------------
 # Step 7 : Graphic Representation
