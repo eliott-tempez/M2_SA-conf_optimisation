@@ -38,7 +38,7 @@ The new additions include:
 - Distinguishing unmodelled residues from absent residues bescause of DNA deletions in the graphs
 - Taking uncertain coordinates into account via the RSRZ and adding it to the main graphs
 - Taking the B-factor into account and adding it to the *neq* graph
-- Classifying the proteins according to their encoding
+- Clustering the proteins according to their structural letters sequence
 
 
 ### References
