@@ -1,4 +1,4 @@
-> outputs/unresolved/update/PDB/3QYM.pdbA_1 18
+> example_outputs/unresolved/update/PDB/3QYM.pdbA_1 18
  126    59.865    0.290   17.658 S -
  127    56.958    1.882   15.682 P -
  128    57.764    5.050   13.738 S K
@@ -17,7 +17,7 @@
  141    42.551   17.274   12.776 S X
  142    39.815   18.227   15.213 F M
  143    37.687   21.315   15.779 Q -
-> outputs/unresolved/update/PDB/3QYM.pdbA_2 174
+> example_outputs/unresolved/update/PDB/3QYM.pdbA_2 174
  147    35.720   24.814   27.837 T -
  148    31.943   24.096   27.868 A -
  149    31.941   23.807   31.686 K F
@@ -192,7 +192,7 @@
  318    49.440   27.595   32.240 D a
  319    52.614   26.192   33.767 S B
  320    54.599   27.441   30.772 I -
-> outputs/unresolved/update/PDB/3QYM.pdbB_1 20
+> example_outputs/unresolved/update/PDB/3QYM.pdbB_1 20
  127    28.266  -11.053   60.483 P -
  128    27.482   -9.514   63.872 S -
  129    29.205   -6.267   64.839 N G
@@ -213,7 +213,7 @@
  144    51.226    4.906   72.176 Q J
  145    51.191    5.897   68.528 S G
  146    52.592    9.442   68.545 S -
-> outputs/unresolved/update/PDB/3QYM.pdbB_2 171
+> example_outputs/unresolved/update/PDB/3QYM.pdbB_2 171
  150    55.220    9.414   59.937 S -
  151    54.276    6.611   62.329 A -
  152    53.538    3.556   60.205 T H
@@ -385,7 +385,7 @@
  318    39.862   18.156   62.686 D a
  319    36.763   18.349   60.393 S B
  320    34.519   17.895   63.436 I -
-> outputs/unresolved/update/PDB/3QYM.pdbC 195
+> example_outputs/unresolved/update/PDB/3QYM.pdbC 195
  126    29.359   44.362   11.693 S -
  127    26.056   46.442   11.828 P -
  128    26.214   49.758   13.675 S K
@@ -581,7 +581,7 @@
  318    16.199   43.480   41.608 D a
  319    19.641   41.896   41.416 S B
  320    21.184   45.369   41.185 I -
-> outputs/unresolved/update/PDB/3QYM.pdbD 196
+> example_outputs/unresolved/update/PDB/3QYM.pdbD 196
  125    -2.529    0.980   13.382 A -
  126    -1.421    1.831   16.908 S -
  127     1.159   -0.740   18.164 P K
@@ -778,7 +778,7 @@
  318     8.808   10.883   46.413 D a
  319     5.814   12.872   45.172 S B
  320     3.562    9.886   45.859 I -
-> outputs/unresolved/update/PDB/3QYM.pdbE 197
+> example_outputs/unresolved/update/PDB/3QYM.pdbE 197
  125    -3.955   50.138    8.415 A -
  126    -4.849   49.917   12.038 S -
  127    -7.384   52.729   12.914 P K
@@ -976,7 +976,7 @@
  319   -10.661   44.855   42.297 S B
  320    -8.390   47.907   42.262 I B
  321    -9.151   49.087   45.898 R -
-> outputs/unresolved/update/PDB/3QYM.pdbF 195
+> example_outputs/unresolved/update/PDB/3QYM.pdbF 195
  126   -35.751    7.063   16.757 S -
  127   -32.453    5.038   17.130 P -
  128   -32.503    2.184   19.643 S K
@@ -1172,7 +1172,7 @@
  318   -20.830   14.197   44.949 D a
  319   -24.307   15.714   44.636 S B
  320   -25.838   12.284   45.242 I -
-> outputs/unresolved/update/PDB/3QYM.pdbG_1 18
+> example_outputs/unresolved/update/PDB/3QYM.pdbG_1 18
  128   -34.720   70.446   57.995 S -
  129   -36.119   67.309   59.568 N -
  130   -34.588   67.660   63.015 T S
@@ -1191,7 +1191,7 @@
  143   -55.025   59.224   69.471 Q N
  144   -57.036   55.992   69.457 Q J
  145   -56.904   54.278   66.089 S -
-> outputs/unresolved/update/PDB/3QYM.pdbG_2 172
+> example_outputs/unresolved/update/PDB/3QYM.pdbG_2 172
  149   -61.904   46.121   60.925 K -
  150   -60.613   48.729   58.474 S -
  151   -59.929   52.045   60.223 A M
@@ -1364,7 +1364,7 @@
  318   -44.534   42.125   62.680 D a
  319   -41.450   41.758   60.476 S B
  320   -39.271   43.024   63.330 I -
-> outputs/unresolved/update/PDB/3QYM.pdbH_1 18
+> example_outputs/unresolved/update/PDB/3QYM.pdbH_1 18
  127   -63.713   48.185   13.800 P -
  128   -64.351   44.695   12.443 S -
  129   -62.799   41.753   14.238 N G
@@ -1383,7 +1383,7 @@
  142   -45.509   33.131   15.483 F M
  143   -43.160   30.322   16.486 Q N
  144   -41.139   28.729   19.296 Q -
-> outputs/unresolved/update/PDB/3QYM.pdbH_2 171
+> example_outputs/unresolved/update/PDB/3QYM.pdbH_2 171
  150   -38.402   34.293   31.451 S -
  151   -38.949   34.557   27.682 A -
  152   -39.633   38.204   26.940 T H

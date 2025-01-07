@@ -1,4 +1,4 @@
-> outputs/unresolved/update/PDB/3QYN.pdbA 195
+> example_outputs/unresolved/update/PDB/3QYN.pdbA 195
  126   -67.462   17.247   11.995 S -
  127   -67.536   16.867   15.857 P -
  128   -65.743   19.247   18.205 S K
@@ -194,7 +194,7 @@
  318   -35.898   13.636   18.074 D V
  319   -37.599   15.289   15.110 S E
  320   -37.137   18.365   17.316 I -
-> outputs/unresolved/update/PDB/3QYN.pdbB_1 20
+> example_outputs/unresolved/update/PDB/3QYN.pdbB_1 20
  124   -57.203  -36.324    0.185 M -
  125   -53.764  -34.953    1.209 A -
  126   -52.314  -31.564    0.199 S Y
@@ -215,7 +215,7 @@
  141   -39.408  -22.094  -18.077 S X
  142   -38.980  -18.311  -18.301 F L
  143   -37.592  -16.059  -21.085 Q -
-> outputs/unresolved/update/PDB/3QYN.pdbB_2 173
+> example_outputs/unresolved/update/PDB/3QYN.pdbB_2 173
  150   -35.822   -3.626  -13.172 S -
  151   -38.545   -5.125  -15.451 A -
  152   -41.986   -6.187  -14.344 T Y
@@ -389,7 +389,7 @@
  320   -26.633  -17.035    0.328 I Z
  321   -23.460  -15.043   -0.379 R E
  322   -22.926  -16.206    3.243 K -
-> outputs/unresolved/update/PDB/3QYN.pdbC 196
+> example_outputs/unresolved/update/PDB/3QYN.pdbC 196
  125   -72.863   14.429  -32.169 A -
  126   -69.195   14.300  -33.255 S -
  127   -68.986   14.681  -37.128 P K
@@ -586,7 +586,7 @@
  318   -39.127    3.477  -38.241 D W
  319   -41.495    3.200  -35.259 S B
  320   -43.351    0.505  -37.163 I -
-> outputs/unresolved/update/PDB/3QYN.pdbD_1 20
+> example_outputs/unresolved/update/PDB/3QYN.pdbD_1 20
  124   -35.810   57.737  -22.070 M -
  125   -33.378   54.874  -22.445 A -
  126   -33.653   51.246  -21.345 S Y
@@ -607,7 +607,7 @@
  141   -26.674   37.177   -2.788 S X
  142   -28.007   33.641   -2.511 F L
  143   -27.846   31.016    0.277 Q -
-> outputs/unresolved/update/PDB/3QYN.pdbD_2 170
+> example_outputs/unresolved/update/PDB/3QYN.pdbD_2 170
  151   -33.236   21.540   -6.055 A -
  152   -36.046   23.982   -6.726 T -
  153   -33.337   26.479   -7.805 W I

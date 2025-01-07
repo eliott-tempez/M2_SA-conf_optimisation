@@ -1,4 +1,4 @@
-load outputs/unresolved/update/PDB/3QYM.pdb, 3QYM 
+load example_outputs/unresolved/update/PDB/3QYM.pdb, 3QYM 
 color grey, 3QYM
 select protch, chain b, 3QYM
 color cyan, protch

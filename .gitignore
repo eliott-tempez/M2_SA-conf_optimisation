@@ -1,8 +1,3 @@
-# PDFs
-*.pdf
-!saconf-tutorial.pdf
-!report.pdf
-
 # cache
 __pycache__/
 *.pyc
@@ -12,5 +7,4 @@ __pycache__/
 
 # outputs
 saconf_out/
-outputs/*/
 

@@ -28,55 +28,56 @@ Structural variable position n° 6 - aligned position: 20 neqSL= 1.7
 *** Repartition of SL in this structural variable position ***
      L :  2
      N :  7
-     - :  1
+     - :  3
 --------------------------------------------------------------
 Structural variable position n° 7 - aligned position: 22 neqSL= 1.82
 *** Repartition of SL in this structural variable position ***
      G :  5
-     - :  2
+     - :  5
      P :  2
 --------------------------------------------------------------
 Structural variable position n° 8 - aligned position: 23 neqSL= 1.89
 *** Repartition of SL in this structural variable position ***
      N :  4
-     - :  2
+     - :  6
      R :  2
 --------------------------------------------------------------
 Structural variable position n° 9 - aligned position: 24 neqSL= 1.89
 *** Repartition of SL in this structural variable position ***
      H :  4
-     - :  2
+     - :  6
      P :  2
 --------------------------------------------------------------
 Structural variable position n° 10 - aligned position: 25 neqSL= 1.57
 *** Repartition of SL in this structural variable position ***
      G :  5
-     - :  2
+     - :  6
      O :  1
 --------------------------------------------------------------
 Structural variable position n° 11 - aligned position: 26 neqSL= 1.82
 *** Repartition of SL in this structural variable position ***
      D :  2
      F :  5
-     - :  2
+     - :  5
 --------------------------------------------------------------
 Structural variable position n° 12 - aligned position: 27 neqSL= 1.82
 *** Repartition of SL in this structural variable position ***
      C :  5
-     - :  2
+     - :  5
      Z :  2
 --------------------------------------------------------------
 Structural variable position n° 13 - aligned position: 28 neqSL= 2.46
 *** Repartition of SL in this structural variable position ***
      G :  5
      M :  1
-     - :  2
+     - :  4
      S :  2
 --------------------------------------------------------------
 Structural variable position n° 14 - aligned position: 29 neqSL= 3.65
 *** Repartition of SL in this structural variable position ***
      D :  4
      H :  3
+     - :  1
      P :  3
      Y :  1
 --------------------------------------------------------------
