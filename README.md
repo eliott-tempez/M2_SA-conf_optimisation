@@ -32,7 +32,7 @@ conda activate SA-conf
 * You can now use the program. The guidelines are available in the saconf-tutorial pdf.
 
 
-### New additions (full report : report.pdf)
+### New additions (full report : `report.pdf`)
 The new additions include:
 - Switching from Python 2 to Python 3
 - Distinguishing unmodelled residues from absent residues bescause of DNA deletions in the graphs
@@ -44,7 +44,7 @@ The examples for the differences between the old program and the new are in the 
 
 
 ### Case study
-The program and its new additions were tested on the Bcl-Xl protein. You can find the whole report in the report.pdf file. The input data is in the `/data` folder, and the results in the `/results` folder.
+The program and its new additions were tested on the Bcl-Xl protein. You can find the whole report in the `report.pdf` file. The input data is in the `/data` folder, and the results in the `/results` folder.
 
 
 ### References
