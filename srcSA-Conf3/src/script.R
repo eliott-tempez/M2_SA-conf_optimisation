@@ -58,6 +58,7 @@ filePos_out = paste(pathsaconf, "Correspondence_positions.csv",sep="/")
 file.mut = paste(pathsaconf, "Mutation_res.txt",sep="/")
 file.SLVar = paste(pathsaconf, "Structural_Variable_position_res.txt",sep="/")
 file.clusters = paste(pathsaconf, "clusters.txt",sep="/")
+file.rsrz = paste(pathsaconf, "rsrz.txt",sep="/")
 
 
 #-----------------------------------------
@@ -684,7 +685,17 @@ rownames(Mat4) = Listpdb
 # Compute alignment columns for which the RSRZ is > 2 for more than 50% of the proteins
 matRsrz[is.na(matRsrz)] = 0
 rsrsThreshold = dim(matRsrz)[1]/2
-axisRSRZ = which(apply(matRsrz > 2, 2, sum) >= rsrsThreshold)
+axisRSRZ = which(apply(matRsrz < 2, 2, sum) >= rsrsThreshold)
+# Print in text file
+text = paste0(length(axisRSRZ), " positions with RSRZ > 2 for more than 50% of the proteins\n\n")
+for (i in 1:length(axisRSRZ)) {
+  text = paste0(text, "Position ", axisRSRZ[i], "\n")
+  for (j in 1:dim(matRsrz)[1]) {
+    text = paste0(text, Listpdb[j], " ", matRsrz[j, axisRSRZ[i]], "\n")
+  }
+  text = paste0(text, "\n")
+}
+write(text, file = file.rsrz)
 
 
 pdf(file.AAalign,width=11,height=8)
@@ -696,7 +707,7 @@ axis(2,seq(1,0,length=dim(Mat4)[1]),rownames(Mat4),cex.axis=0.6,las=1)
 axis(1,seq(0,(dim(Mat4)[2]-1), by=10)/dim(Mat4)[2],seq(1,dim(Mat4)[2], by=10),cex.axis=0.6,las=1)
 # Add tick for rsrz columns
 if (length(axisRSRZ) > 0) {
-  axis(3, at=axisRSRZ/dim(Mat4)[2], labels=FALSE, col.ticks="red")
+  axis(3, at=(axisRSRZ-1)/(dim(Mat4)-1)[2], labels=FALSE, col.ticks="red")
   mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 #axis(4,seq(0,(dim(Mat4)[1]-1), by=5)/dim(Mat4)[1],sort(seq(1,dim(Mat4)[1], by=5),decreasing=T),cex.axis=0.6,las=1)
 
@@ -729,7 +740,7 @@ if (nbgraph>1){
         axis(2,seq(1,0,length=dim(ssMat)[1]),rownames(ssMat),cex.axis=0.6,las=1)
         axis(1,seq(0,(dim(ssMat)[2]-1), by=10)/dim(ssMat)[2],seq(1,dim(ssMat)[2], by=10),cex.axis=0.6,las=1)
         if (length(axisRSRZ) > 0) {
-          axis(3, at=axisRSRZ/dim(Mat4)[2], labels=FALSE, col.ticks="red")
+          axis(3, at=(axisRSRZ-1)/(dim(Mat4)[2]-1), labels=FALSE, col.ticks="red")
           mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 
         box()
@@ -808,7 +819,7 @@ axis(2,seq(1,0,length=dim(Mat3)[1]),rownames(Mat3),cex.axis=0.7,las=1)
 axis(1,seq(0,(dim(Mat3)[2]-1), by=10)/dim(Mat3)[2],seq(1,dim(Mat3)[2], by=10),cex.axis=0.6,las=1)
 #axis(4,seq(1,dim(Mat3)[1], by=5)/dim(Mat3)[1],sort(seq(1,dim(Mat3)[1], by=5),decreasing=T),cex.axis=0.6,las=1)
 if (length(axisRSRZ) > 0) {
-  axis(3, at=axisRSRZ/dim(Mat4)[2], labels=FALSE, col.ticks="red")
+  axis(3, at=(axisRSRZ-1)/(dim(Mat4)[2]-1), labels=FALSE, col.ticks="red")
   mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 
 box()
@@ -840,7 +851,7 @@ if (nbgraph>1){
         axis(2,seq(1,0,length=dim(ssMat)[1]),rownames(ssMat),cex.axis=0.7,las=1)
         axis(1,seq(0,(dim(ssMat)[2]-1), by=10)/dim(ssMat)[2],seq(1,dim(ssMat)[2], by=10),cex.axis=0.6,las=1)
         if (length(axisRSRZ) > 0) {
-          axis(3, at=axisRSRZ/dim(Mat4)[2], labels=FALSE, col.ticks="red")
+          axis(3, at=(axisRSRZ-1)/(dim(Mat4)[2]-1), labels=FALSE, col.ticks="red")
           mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 
         box()
@@ -916,7 +927,7 @@ Map(axis, side=2, at=seq(1,0,length=dim(ordered_Mat3)[1]), col.axis=rainbow(opti
 axis(2, seq(1,0,length=dim(ordered_Mat3)[1]),labels=FALSE)
 # rsrz
 if (length(axisRSRZ) > 0) {
-  axis(3, at=axisRSRZ/dim(Mat4)[2], labels=FALSE, col.ticks="red")
+  axis(3, at=(axisRSRZ-1)/(dim(Mat4)[2]-1), labels=FALSE, col.ticks="red")
   mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
 box()
 plot.new()
