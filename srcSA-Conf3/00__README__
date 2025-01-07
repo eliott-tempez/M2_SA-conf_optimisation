@@ -19,7 +19,7 @@ Leslie Regad, Jean-Baptiste Cheron, Caroline Senac, Dhoha Triki, Delphine Flatte
 ** HOW TO RUN
 
 1 ) Requirements
-    - python 2.7
+    - python 3
         -- Packages: python-dev python-biopython 
     - clustalw / tcoffee
 

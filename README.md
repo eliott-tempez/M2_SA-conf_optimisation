@@ -40,6 +40,12 @@ The new additions include:
 - Taking the B-factor into account and adding it to the *neq* graph
 - Clustering the proteins according to their structural letters sequence
 
+The examples for the differences between the old program and the new are in the `/example_outputs` folder.
+
+
+### Case study
+The program and its new additions were tested on the Bcl-Xl protein. You can find the whole report in the report.pdf file. The input data is in the `/data` folder, and the results in the `/results` folder.
+
 
 ### References
 **(1)** Regad, L.; Chéron, J.-B.; Triki, D.; Senac, C.; Flatters, D.; Camproux, A.-C. Exploring the Potential of a Structural Alphabet-Based Tool for Mining Multiple Target Conformations and Target Flexibility Insight. *PLOS ONE* 2017, 12 (8), e0182972. https://doi.org/10.1371/journal.pone.0182972.
