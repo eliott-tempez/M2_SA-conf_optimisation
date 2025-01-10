@@ -1,4 +1,4 @@
-load results/PDB/3QKD.pdb, 3QKD 
+load ./saconf_out/PDB/3QKD.pdb, 3QKD 
 color grey, 3QKD
 select protch, chain a, 3QKD
 color cyan, protch

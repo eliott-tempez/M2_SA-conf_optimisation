@@ -1,4 +1,4 @@
-> results/PDB/6HJL_E.pdbE 137
+> ./saconf_out/PDB/6HJL_E.pdbE 137
    3    -8.640    5.462    0.046 Q -
    4    -4.956    6.411   -0.410 S -
    5    -5.945    9.944   -1.641 N B

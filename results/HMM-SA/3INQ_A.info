@@ -1,4 +1,4 @@
-> results/PDB/3INQ_A.pdbA 138
+> ./saconf_out/PDB/3INQ_A.pdbA 138
    3    -6.951   10.441   -0.219 Q -
    4    -5.256    8.759   -3.187 S -
    5    -1.949   10.639   -3.429 N Z
