@@ -911,32 +911,15 @@ write(output_text, file = file.clusters)
 
 
 ## Print result in graphical form
-# Order Mat3 by clusters
-ordered_Mat3 <- Mat3[order(clusters[rownames(Mat3)]), ]
+# Order Mat3 in the same order as hclust
+ordered_Mat3 <- Mat3[rev(hc$labels[hc$order]), , drop = FALSE]
 
 # Set up the page
 pdf(file.Graphclusters,width=11,height=8)
-par(mar = c(5, 0, 2, 0))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
-nf = layout(matrix(1:8, 2, 4, byrow=TRUE), c(3, 15, 1, 4), c(15, 7), TRUE)
-plot.new()
-# Plot 1
-image(t(ordered_Mat3)[,nrow(ordered_Mat3):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main="",br=0:28)
-axis(1,seq(0,(dim(ordered_Mat3)[2]-1), by=10)/dim(ordered_Mat3)[2],seq(1,dim(ordered_Mat3)[2], by=10),cex.axis=0.6,las=1)
-# Cluster visualisation
-Map(axis, side=2, at=seq(1,0,length=dim(ordered_Mat3)[1]), col.axis=rainbow(optimal_k)[sort(clusters)], labels=rownames(ordered_Mat3), lwd=0, las=1)
-axis(2, seq(1,0,length=dim(ordered_Mat3)[1]),labels=FALSE)
-# rsrz
-if (length(axisRSRZ) > 0) {
-  axis(3, at=(axisRSRZ-1)/(dim(Mat4)[2]-1), labels=FALSE, col.ticks="red")
-  mtext("RSRZ Threshold Exceeded", side=3, line=0.5, cex=0.4, col="red")}
-box()
-plot.new()
-numero = 1:28
-# Legend
-plot(rep(0,length=length(numero)),numero,type="n",axes=F,ylab="",xlab="")
-text(rep(0,length=length(numero)),numero,label=c("unresolved", Alphabet[numero[2:28]]),col=VectcolSL)
+par(mar = c(3, 2.5, 3, 3.5))   ###c(bottom, left, top, right). Défaut : 5.1 4.1 4.1 2.1
+nf = layout(matrix(1:3, 1, 3, byrow=TRUE), c(3, 10, 4), c(11), TRUE)
+
 # Plot the dendrogram
-plot.new()
 labelCol <- function(x) {
   if (is.leaf(x)) {
     ## fetch label
@@ -947,8 +930,25 @@ labelCol <- function(x) {
 }
 par(cex = 0.6)
 hc_plot = dendrapply(as.dendrogram(hc), labelCol)
-plot(hc_plot, main = paste("Number of optimal clusters :", optimal_k))
-abline(h=optimal_k, col="orange")
+plot(hc_plot, horiz = TRUE, main = "", axes = FALSE, ylab = "")
+par(cex = 1)
+
+# Heatmap
+image(t(ordered_Mat3)[,nrow(ordered_Mat3):1],ylab="",cex.lab=1.5,cex.main=1.5,col=VectcolSL,axes=F,main=paste("Optimal number of clusters:", optimal_k),br=0:28)
+axis(1,seq(0,(dim(ordered_Mat3)[2]-1), by=10)/dim(ordered_Mat3)[2],seq(1,dim(ordered_Mat3)[2], by=10),cex.axis=0.6,las=1)
+axis(2, seq(1,0,length=dim(ordered_Mat3)[1]),labels=FALSE)
+box()
+# coord for cluster separations
+sep = sapply(which(diff(clusters[rev(hc$labels[hc$order])]) != 0), 
+             function(i) mean(seq(1,0,length=dim(ordered_Mat3)[1])[i:(i + 1)]))
+abline(h=sep, col="white")
+#axis(2, sep, labels = FALSE, col="white") #for colours other than white
+
+
+numero = 1:28
+# Legend
+plot(rep(0,length=length(numero)),numero,type="n",axes=F,ylab="",xlab="")
+text(rep(0,length=length(numero)),numero,label=c("unresolved", Alphabet[numero[2:28]]),col=VectcolSL)
 dev.off()
 
 
