@@ -688,12 +688,14 @@ rsrsThreshold = dim(matRsrz)[1]/2
 axisRSRZ = which(apply(matRsrz > 2, 2, sum) >= rsrsThreshold)
 # Print in text file
 text = paste0(length(axisRSRZ), " positions with RSRZ > 2 for more than 50% of the proteins\n\n")
-for (i in 1:length(axisRSRZ)) {
-  text = paste0(text, "Position ", axisRSRZ[i], "\n")
-  for (j in 1:dim(matRsrz)[1]) {
-    text = paste0(text, Listpdb[j], " ", matRsrz[j, axisRSRZ[i]], "\n")
+if (length(axisRSRZ) > 0) {
+  for (i in 1:length(axisRSRZ)) {
+    text = paste0(text, "Position ", axisRSRZ[i], "\n")
+    for (j in 1:dim(matRsrz)[1]) {
+      text = paste0(text, Listpdb[j], " ", matRsrz[j, axisRSRZ[i]], "\n")
+    }
+    text = paste0(text, "\n")
   }
-  text = paste0(text, "\n")
 }
 write(text, file = file.rsrz)
 
