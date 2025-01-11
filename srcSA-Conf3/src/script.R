@@ -963,7 +963,9 @@ matLS[matLS == "-"] = "NA"
 # Get normalised b-factor 
 matBfact = getBfactMat(infoRes, matAANum, Listpdb)
 bfactMean = apply(matBfact, 2, mean, na.rm = TRUE)
-bfactQuali = ifelse(bfactMean > 0, "firebrick", "dodgerblue4")
+bfactMean[which(neqAAVect == 0)] = NA
+# Qualitative representation of b-factor
+bfactQuali = ifelse(is.na(bfactMean), "white", ifelse(bfactMean > 0, "firebrick", "dodgerblue4"))
 
 ##def graphics parameters
 mm = rbind( neqAAVect, neqLSVect)
