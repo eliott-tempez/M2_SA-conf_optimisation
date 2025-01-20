@@ -9,6 +9,7 @@
 #
 # Addition made by J. Martin 2005
 # Addition made by L. Regad 2014
+# Addition made by E. Tempez 2025
 
 import string
 import sys
@@ -1892,9 +1893,6 @@ class PDB:
 			return []
 		dst7 = self.HMMGeo(theId)
 		
-		# make sure the HMMPred file is executable
-		command = "chmod +x " + os.path.join(BINPATH, "HMMPred")
-		subprocess.run(command, shell=True, check=True, text=True, capture_output=True)
 		# ici choix du modle d'encodage
 		if MODEL=='none':
 			cmd = os.path.join(BINPATH, "HMMPred") + " -iMdl " + os.path.join(HMMPATH, "27best-2.model") + " -idst stdin -noconfmat 2> /dev/null"
