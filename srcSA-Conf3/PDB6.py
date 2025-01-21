@@ -27,9 +27,11 @@ from Geo3DUtils import *
 #GBINPATH="/home/leslieregad/Sauvegarde/sauvegardeAmpere/Prog/ENCODE_juliette/"
 #GHMMPATH="/home/leslieregad/Sauvegarde/sauvegardeAmpere/Prog/ENCODE_juliette/Bestmodels/"
 
+#GBINPATH="/home/lregad/Research/Projects/src/srcEncodage/"
+#GHMMPATH="/home/lregad/Research/Projects/src/srcEncodage/Bestmodels/"
 
-GBINPATH="/home/lregad/Research/Projects/src/srcEncodage/"
-GHMMPATH="/home/lregad/Research/Projects/src/srcEncodage/Bestmodels/"
+GBINPATH="/home/eltem/Documents/Cours/M2/projet_long/srcSA-Conf3/src/"
+GHMMPATH="/home/eltem/Documents/Cours/M2/projet_long/srcSA-Conf3/src/Bestmodels/"
 
 
 
