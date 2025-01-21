@@ -11,3 +11,7 @@ saconf_out/
 # Biblio
 biblio/
 
+# Executable
+dist/
+saconf_LR_2025-01-20.pkg
+
