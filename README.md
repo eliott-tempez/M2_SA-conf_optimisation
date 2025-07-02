@@ -1,3 +1,5 @@
+This is the git for the details of my master's project around improving SA-conf. For the official SA-conf github, click [here](https://github.com/eliott-tempez/SA-conf)
+
 ## SA-conf Optimisaiton
 **Eliott TEMPEZ - Université Paris Cité**
 
